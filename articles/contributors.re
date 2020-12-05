@@ -1,15 +1,18 @@
 = 著者紹介
 
 ==== mochiko / @mochikoAsTech
-Web制作会社のシステムエンジニア。
-モバイルサイトのエンジニア、SIerとソーシャルゲームの広報を経て、2013年よりサーバホスティングサービスの構築と運用を担当。現在は再びWebアプリケーションエンジニアとしてシステム開発に従事。
+テクニカルライター。元Web制作会社のインフラエンジニア。ねこが好き。
 「分からない気持ち」に寄り添える技術者になれるように日々奮闘中。
+技術書典で頒布した「DNSをはじめよう 改訂第2版」「AWSをはじめよう 改訂第2版」「SSLをはじめよう」の「はじめようシリーズ3部作」は累計で10,000冊を突破。
 
  * @<href>{https://twitter.com/mochikoAsTech}
  * @<href>{https://mochikoastech.booth.pm/}
+ * @<href>{https://note.mu/mochikoastech}
+ * @<href>{https://mochikoastech.hatenablog.com/}
+ * @<href>{https://www.amazon.co.jp/mochikoAsTech/e/B087NBL9VM}
 
 ==== Hikaru Wakamatsu
-表紙デザインを担当。「DNSをはじめよう」の名付け親。
+表紙デザインを担当。
 
 ==== Shinya Nagashio
-挿絵デザインを担当。
+目次、章扉デザインを担当。
