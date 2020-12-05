@@ -1,0 +1,8 @@
+version: '3'
+services:
+  review:
+    image: vvakame/review:4.2
+    volumes:
+      - .:/startaws-revised
+    build: .
+    working_dir: /startaws-revised
