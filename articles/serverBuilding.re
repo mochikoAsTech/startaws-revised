@@ -22,7 +22,7 @@ Windowsのパソコンを使っている方は、サーバを立てる前に「�
 //image[rlogin][RLogin][scale=0.8]{
 //}
 
-本著ではいちばん上のRLogin（@<img>{rlogin}）を使って説明していきますので、特にこだわりがなければRLoginを使うことをお勧めします。RLoginの「実行プログラム(64bit)@<fn>{64bit}」（@<img>{downloadRLogin01}）のURL、@<href>{http://nanno.dip.jp/softlib/program/rlogin_x64.zip}をクリックしてください。
+本書ではいちばん上のRLogin（@<img>{rlogin}）を使って説明していきますので、特にこだわりがなければRLoginを使うことをお勧めします。RLoginの「実行プログラム(64bit)@<fn>{64bit}」（@<img>{downloadRLogin01}）のURL、@<href>{http://nanno.dip.jp/softlib/program/rlogin_x64.zip}をクリックしてください。
 
 //footnote[64bit][もしパソコンのWindowsが32bit版だった場合は「実行プログラム(32bit)」のURLをクリックしてください。]
 
@@ -107,7 +107,7 @@ Amazon Linuxには2018年8月時点で
  * Amazon Linux
  * Amazon Linux 2
 
-の2種類があります。Amazon LinuxはRHEL6系なのでCentOS 6、Amazon Linux 2はRHEL7系なのでCentOS 7と使い勝手はほぼ同じです。本著ではAmazon Linuxを使用します。@<fn>{apache}
+の2種類があります。Amazon LinuxはRHEL6系なのでCentOS 6、Amazon Linux 2はRHEL7系なのでCentOS 7と使い勝手はほぼ同じです。本書ではAmazon Linuxを使用します。@<fn>{apache}
 
 //footnote[apache][ちなみにこの後インストールするApacheというミドルウェアはAmazon Linuxだとデフォルトが2.2系、Amazon Linux 2だと2.4系になります。]
 
@@ -615,7 +615,7 @@ Elastic IPをしっかりメモ（@<table>{ElasticIPAddress}）しておきま�
 
 皆さんも普段電話をかけるときに電話番号をいちいち打つのは面倒なので、アドレス帳に名前と電話番号を登録していますよね。それと同じようにネームサーバにドメイン名とIPの紐付けを登録しておけば、そのドメイン名を使ってサーバに入れるようになります。
 
-皆さんは「DNSをはじめよう」で買った自分のドメインを持っているので、早速ドメイン名とIPアドレスの組み合わせをネームサーバに登録してみましょう。ドメイン名の登録はRoute53で行います。
+皆さんは「DNSをはじめよう」で買った自分のドメイン名を持っているので、早速ドメイン名とIPアドレスの組み合わせをネームサーバに登録してみましょう。ドメイン名の登録はRoute53で行います。
 
 === サーバに入るときに使うドメイン名を作ろう
 
