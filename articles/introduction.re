@@ -72,4 +72,4 @@ DNS本、AWS本、そしてSSL本の『はじめようシリーズ3部作』は�
 
 不正確あるいは誤認と思われる箇所がありましたら、必要に応じて適宜改訂を行いますのでGitHubのIssueやPull requestで筆者までお知らせいただけますと幸いです。
 
-@<href>{https://github.com/mochikoAsTech/startAWS}
+@<href>{https://github.com/mochikoAsTech/startaws-revised}
