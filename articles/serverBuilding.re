@@ -10,21 +10,20 @@
 
 === お使いのパソコンがWindowsの場合
 
-Windowsのパソコンを使っている方は、サーバを立てる前に「ターミナル」と呼ばれる黒い画面のソフトをインストールしておきましょう。サーバに接続するときにはこのターミナルを使うのですが、ターミナルのソフトには色々な種類があります。
+Windowsのパソコンを使っている方は、サーバを立てる前に「ターミナル」と呼ばれる黒い画面のソフトをインストール@<fn>{wsl}しておきましょう。サーバに接続するときにはこのターミナルを使うのですが、ターミナルのソフトには色々な種類があります。
 
  * RLogin（@<href>{http://nanno.dip.jp/softlib/man/rlogin/}）
  * Poderosa（@<href>{https://ja.poderosa-terminal.com/}）
  * Tera Term（@<href>{https://ja.osdn.net/projects/ttssh2/}）
- * PuTTYjp（@<href>{http://hp.vector.co.jp/authors/VA024651/PuTTYkj.html}）@<fn>{PuTTYjp}
 
-//footnote[PuTTYjp][PuTTYjpを使う場合、.pemの秘密鍵をPuTTYgenで.ppkに変換する必要が出てくるため、他のターミナルソフトに比べると一手間余計にかかります。]
+//footnote[wsl][既にWSL（Windows Subsystem for Linux）やWSL2が使える環境であれば、次の項「お使いのパソコンがMacの場合」の手順を参考に、ターミナルをインストールする代わりにWSLを使っても構いません。]
 
 //image[rlogin][RLogin][scale=0.8]{
 //}
 
 本書ではいちばん上のRLogin（@<img>{rlogin}）を使って説明していきますので、特にこだわりがなければRLoginを使うことをお勧めします。RLoginの「実行プログラム(64bit)@<fn>{64bit}」（@<img>{downloadRLogin01}）のURL、@<href>{http://nanno.dip.jp/softlib/program/rlogin_x64.zip}をクリックしてください。
 
-//footnote[64bit][もしパソコンのWindowsが32bit版だった場合は「実行プログラム(32bit)」のURLをクリックしてください。]
+//footnote[64bit][もしお使いのパソコンでWindowsが32bit版だった場合は「実行プログラム(32bit)」のURLをクリックしてください。]
 
 //image[downloadRLogin01][「実行プログラム(64bit)」のURLをクリックしてダウンロード][scale=0.8]{
 //}
@@ -43,7 +42,7 @@ Windowsのパソコンを使っている方は、サーバを立てる前に「�
 
 解凍したら、デスクトップにできた「rlogin_x64」というフォルダの中にある「RLogin.exe」@<fn>{filenameExtension}（@<img>{downloadRLogin04}）をダブルクリックすればRLoginが起動（@<img>{downloadRLogin05}）します。
 
-//footnote[filenameExtension][フォルダの中にRLoginはあるけどRLogin.exeなんて見当たらない…という場合、ファイルの拡張子が非表示になっています。この後も拡張子を含めてファイル名を確認する場面が何度かでてきますので、表示されていない人は「拡張子 表示」でGoogle検索して拡張子が表示されるように設定変更しておきましょう。]
+//footnote[filenameExtension][フォルダの中にRLoginはあるけどRLogin.exeなんて見当たらない…という場合、ファイルの拡張子が非表示になっています。この後も拡張子を含めてファイル名を確認する場面が何度かでてきますので、表示されていない人は「拡張子 表示」でGoogle検索して、拡張子が表示されるようにWindowsの設定を変更しておきましょう。]
 
 //image[downloadRLogin04][RLogin.exeをダブルクリック][scale=0.6]{
 //}
