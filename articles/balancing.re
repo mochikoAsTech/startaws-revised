@@ -161,12 +161,12 @@ EC2ダッシュボードの左メニューで「ロードバランサー」を�
 //image[startaws182][サービス＞ネットワーキング＆コンテンツ配信＞Route53][scale=0.8]{
 //}
 
-Route53ダッシュボードを開いたらDNS managementの「Hosted zones」をクリック（@<img>{startaws183}）します。
+Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」をクリック（@<img>{startaws183}）します。
 
-//image[startaws183][「Hosted zones」をクリック][scale=0.8]{
+//image[startaws183][「ホストゾーン」をクリック][scale=0.8]{
 //}
 
-Domain Nameの自分のドメイン名（筆者の場合はstartdns.fun）をクリック（@<img>{startaws184}）します。
+「ドメイン名」の列にある自分のドメイン名（筆者の場合はstartdns.fun）をクリック（@<img>{startaws184}）します。
 
 //image[startaws184][自分のドメイン名をクリック][scale=0.8]{
 //}
@@ -203,7 +203,7 @@ Aliasを「No」から「Yes」に変更して「Alias Target」の「Enter targ
 ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 //}
 
-「Amazon Linux AMI」と表示されたらログイン完了です。次のコマンドを叩いてみてください。
+「Amazon Linux 2 AMI」と表示されたらログイン完了です。次のコマンドを叩いてみてください。
 
 //cmd{
 $ dig www.自分のドメイン名 +short

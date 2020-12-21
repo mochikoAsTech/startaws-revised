@@ -13,7 +13,7 @@
 ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 //}
 
-「Amazon Linux AMI」と表示されたらログイン完了です。ここからの作業はrootにならずに@<ttb>{ec2-userのまま}で行ってください。
+「Amazon Linux 2 AMI」と表示されたらログイン完了です。ここからの作業はrootにならずに@<ttb>{ec2-userのまま}で行ってください。
 
 === WordPressをダウンロード
 

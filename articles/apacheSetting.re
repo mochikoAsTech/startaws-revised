@@ -76,7 +76,7 @@ Windowsの方はRLoginを起動して「start-aws-instance」に接続してく�
 ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 //}
 
-「Amazon Linux AMI」と表示されたら「sudo su -」@<fn>{sudoSu}でrootになりましょう。（@<img>{startaws63}）
+「Amazon Linux 2 AMI」と表示されたら「sudo su -」@<fn>{sudoSu}でrootになりましょう。（@<img>{startaws63}）
 
 //footnote[sudoSu][sudoは「他のユーザとしてコマンドを実行する」ためのコマンドで、 suは「他のユーザになる」ためのコマンドです。「他のユーザ＝root」の場合はユーザ名を書かなくてもいいので省略していますが、省略せずに書くと「sudo -u root su - root」（rootとして「rootになる」というコマンドを実行する）ということです。ちなみに勘違いされることが多いですがsuは「Super User」ではなく「Substitute User（ユーザーを代用する）」の略です。]
 
@@ -84,7 +84,7 @@ ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 $ sudo su -
 //}
 
-//image[startaws63][Amazon Linux AMIと表示されたらrootになろう][scale=0.8]{
+//image[startaws63][Amazon Linux 2 AMIと表示されたらrootになろう][scale=0.8]{
 //}
 
 Apacheの大本となる設定ファイルは「/etc/httpd/conf/httpd.conf」です。350行以上あるのでtailコマンドを使って最後の5行だけ確認してみましょう。
@@ -296,24 +296,24 @@ AWSをはじめよう
 //image[startaws71][サービス＞ネットワーキング＆コンテンツ配信＞Route53][scale=0.8]{
 //}
 
-Route53ダッシュボードを開いたらDNS managementの「Hosted zones」をクリック（@<img>{startaws72}）します。
+Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」をクリック（@<img>{startaws72}）します。
 
-//image[startaws72][「Hosted zones」をクリック][scale=0.8]{
+//image[startaws72][「ホストゾーン」をクリック][scale=0.8]{
 //}
 
-Domain Nameの自分のドメイン名（筆者の場合はstartdns.fun）をクリック（@<img>{startaws73}）します。
+「ドメイン名」の列にある自分のドメイン名（筆者の場合はstartdns.fun）をクリック（@<img>{startaws73}）します。
 
 //image[startaws73][自分のドメイン名をクリック][scale=0.8]{
 //}
 
-「Create Record Set」をクリック（@<img>{startaws74}）してください。すると右側にリソースレコードの情報を入力するフォームが出てきます。
+「レコードを作成」をクリック（@<img>{startaws74}）してください。すると右側にリソースレコードの情報を入力するフォームが出てきます。
 
-//image[startaws74][「Create Record Set」をクリック][scale=0.8]{
+//image[startaws74][「レコードを作成」をクリック][scale=0.8]{
 //}
 
-Nameには「www」、ValueにはElastic IPを入力（@<img>{startaws75}）します。Elastic IPは左側の「login.自分のドメイン名」のところにも書いてあるので、それをコピーしてきても構いません。入力できたら「Create」をクリックします。
+レコード名には「www」、値にはElastic IPを入力（@<img>{startaws75}）します。Elastic IPは左側の「login.自分のドメイン名」のところにも書いてあるので、それをコピーしてきても構いません。入力できたら「レコードを作成」をクリックします。
 
-//image[startaws75][Nameには「www」、Valueにはloginと同じElastic IPを入力][scale=0.8]{
+//image[startaws75][レコード名には「www」、値にはloginと同じElastic IPを入力][scale=0.8]{
 //}
 
 これで「www.自分のドメイン名」（@<img>{startaws76}）というAレコードが作成できました。

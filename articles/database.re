@@ -306,7 +306,7 @@ Windowsの方はRLoginを起動して「start-aws-instance」に接続してく�
 ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 //}
 
-「Amazon Linux AMI」と表示されたら次のコマンドを叩きます。
+「Amazon Linux 2 AMI」と表示されたら次のコマンドを叩きます。
 
 //cmd{
 $ mysql -h エンドポイント -u マスターユーザの名前 -p
