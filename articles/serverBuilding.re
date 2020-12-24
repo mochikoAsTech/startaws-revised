@@ -798,7 +798,7 @@ $ sudo su -
 
 今度はMySQLのYumリポジトリ@<fn>{mysqlYumRepos}を追加した上で、データベース接続時に必要なMySQLクライアントを入れておきます。それぞれ最後に「Complete!」と表示されればOKです。
 
-//footnote[mysqlYumRepos][yumコマンドをたたいたとき、一体どこからwhoisコマンドやMySQLクライアントを連れてきてくれてるんだろう、と不思議に思いませんか？思いますよね。思う前提で話を進めます。あなたがyumコマンドをたたくと、「Yumリポジトリ」という場所から指定されたミドルウェアのパッケージを連れてきます。どこのYumリポジトリへ探しに行くかは「/etc/yum.repos.d/」の下にあるファイルで設定されています。探しに行った先のYumリポジトリに指定のパッケージがなければ、"No package ○○ available."（○○は入手できなかったよ）というメッセージが出てインストールはできません。ないものはインストールできないのです。今回はMySQLクライアントをインストールしたいのですが、Amazon Linux 2でもともと設定されている「Amazon Linux 2 core repository」というYumリポジトリには、MySQLクライアントが存在しないため、MySQLクライアントが存在しているMySQLのYumリポジトリを、探しに行く先として追加します。 @<href>{https://dev.mysql.com/downloads/repo/yum/}]
+//footnote[mysqlYumRepos][yumコマンドをたたいたとき、一体どこからwhoisコマンドやMySQLクライアントを連れてきてくれてるんだろう、と不思議に思いませんか？思いますよね。思う前提で話を進めます。あなたがyumコマンドを叩くと、「Yumリポジトリ」という場所から指定されたミドルウェアのパッケージを連れてきます。どこのYumリポジトリへ探しに行くかは「/etc/yum.repos.d/」の下にあるファイルで設定されています。探しに行った先のYumリポジトリに指定のパッケージがなければ、"No package ○○ available."（○○は入手できなかったよ）というメッセージが出てインストールはできません。ないものはインストールできないのです。今回はMySQLクライアントをインストールしたいのですが、Amazon Linux 2でもともと設定されている「Amazon Linux 2 core repository」というYumリポジトリには、MySQLクライアントが存在しないため、MySQLクライアントが存在しているMySQLのYumリポジトリを、探しに行く先として追加します。 @<href>{https://dev.mysql.com/downloads/repo/yum/}]
 
 //cmd{
 # yum install https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
@@ -824,7 +824,7 @@ WordPressを動かすために必要なPHP7.4@<fn>{php74}も入れます。
 
 Apacheの正式名称は「Apache HTTP Server」です。ちょっと分かりにくいかも知れませんが、パソコンにMicrosoft Excelをインストールしたら「表計算というサービスが提供できるパソコン」になるのと同じで、サーバにこのApacheをインストールすると「リクエストに対してウェブページを返すサービスが提供できるサーバ」、つまりウェブサーバになります。 今回はApacheを入れましたがウェブサーバのミドルウェアは他にも色々な種類があります。
 
-インストールが終わったので、サーバを起動した際にApacheが自動で立ち上がってくるよう、自動起動の設定もしておきましょう。systemctlコマンドで、httpd（Apacheのこと）を起動させると共に、自動起動を有効にしておきます。
+インストールが終わったので、サーバを再起動した際にApacheが自動で立ち上がってくるよう、自動起動の設定もしておきましょう。systemctlコマンドに--nowオプションを付けて、httpd（Apacheのこと）を今すぐ起動させると共に、自動起動を有効にしておきます。
 
 //cmd{
 # systemctl enable --now httpd
@@ -838,7 +838,7 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service t
 enabled
 //}
 
-ウェブサーバが起動したか、ちょっと確認してみましょう。curl（カール）という「ターミナルにおけるブラウザ」のようなコマンドを使って、localhost（自分自身）に「ページを見せて」とリクエストをしてみます。
+ウェブサーバが起動したか、ちょっと確認してみましょう。curl（カール）という「ターミナルにおけるブラウザ」のようなコマンドを使って、localhost（サーバ自身）に「ページを見せて」とリクエストをしてみます。
 
 //cmd{
 # curl localhost
@@ -850,19 +850,72 @@ enabled
 
 ==== タイムゾーンの設定
 
-date（デート）コマンドでサーバの時間を確認してみましょう。日本はいま22日の深夜0:32なのですが、サーバの時間は21日の15:14で9時間ずれてしまっています。
+date（デート）コマンドでサーバの時間を確認してみましょう。日本はいま12月22日の深夜0:32なのですが、サーバの時間は12月21日の15:14で9時間ずれてしまっています。
 
 //cmd{
 # date
 Mon Dec 21 15:32:28 UTC 2020
 //}
 
-日本時間@<fn>{jst}になるようタイムゾーンの変更を行いましょう。
+日本時間@<fn>{jst}になるよう、timedatectlコマンド@<fn>{timedatectl}でタイムゾーンの変更を行いましょう。
 
 //footnote[jst][日本標準時（JST）は、協定世界時（UTC）から9時間進めた時間、つまりUTC+9ですね。]
+//footnote[timedatectl][名前のとおり、サーバのtime（時間）とdate（日付）を制御するためのコマンドです。]
 
 //cmd{
-# vi /etc/sysconfig/clock
+# timedatectl set-timezone Asia/Tokyo
+//}
+
+では今のtimedatectlコマンドによってシンボリックリンクが作られたことを、lsコマンド@<fn>{ls}で確認してみましょう。シンボリックリンクとは、Windowsでいうところのショートカットみたいなものです。ちなみに入力しているパス（path）は入力途中でタブを押すと自動的に補完されるので、全部手打ちしなくても大丈夫です。たとえば
+
+//footnote[ls][lsはlistの略で、名前のとおりファイルを一覧表示してくれるコマンドです。-lはlongの略で「詳細を表示」というオプションです。]
+
+//cmd{
+# ls -l /etc/localt
+//}
+
+まで打ってからTabキーを押すと次のように自動補完されます
+
+//cmd{
+ls -l /etc/localtime
+//}
+
+ではシンボリックリンクが生成されたかlsコマンドで確認してみましょう。（@<img>{startaws36}）
+
+//cmd{
+# ls -l /etc/localtime
+//}
+
+//image[startaws36][シンボリックリンクが生成された][scale=0.8]{
+//}
+
+「->」の矢印が実体であるファイルを指しているので、シンボリックリンクができていることがわかります。
+
+==== locale（言語）の設定
+
+続いてlocale（言語）の設定をします。今は言語の設定が英語になっているのでエラーメッセージなども英語で表示されますが、分かりやすくするため言語設定を日本語に変更しましょう。
+
+//cmd{
+# localectl set-locale LANG=ja_JP.UTF-8
+//}
+
+設定できたかどうか、確認してみましょう。localectl statusを叩いて、次のように表示されれば問題ありません。
+
+//cmd{
+# localectl status
+   System Locale: LANG=ja_JP.UTF-8
+       VC Keymap: n/a
+      X11 Layout: n/a
+//}
+
+通常のLinuxサーバであればこの設定だけでいいのですが、Amazon Linux 2の場合、AMIからインスタンスを復元@<fn>{restore}すると、いま設定した「LANG=ja_JP.UTF-8」がそっと元の「LANG=en_US.UTF-8」に戻ってしまいます。
+
+//footnote[restore][「AMIからインスタンスを復元」については@<chapref>{backup}と@<chapref>{balancing}で解説します。]
+
+元に戻らないよう次のファイルも編集しておきましょう。
+
+//cmd{
+# vi /etc/cloud/cloud.cfg
 //}
 
 vi（ブイアイ）@<fn>{remoteSsh}はテキストファイルを編集するためのコマンドです。viコマンドでファイルを開くと、最初は次のような「閲覧モード」の画面（@<img>{startaws31}）が表示されます。閲覧モードは「見るだけ」なので編集ができません。
@@ -872,17 +925,25 @@ vi（ブイアイ）@<fn>{remoteSsh}はテキストファイルを編集する�
 //image[startaws31][viコマンドでファイルを開いた][scale=0.8]{
 //}
 
-この状態でi（アイ）を押すと「編集モード」@<fn>{insertMode}に変わります。（@<img>{startaws32}）左下に「-- INSERT --」と表示されていたら「編集モード」です。
+閲覧モードの状態でShift+Gを押すと、ファイルの一番下まで移動（@<img>{startaws31-2}）できます。
+
+//image[startaws31-2][Shift+Gでファイルの一番下まで移動した][scale=0.8]{
+//}
+
+この状態でo（オー）を押すと「編集モード」@<fn>{insertMode}になって、一番下にまだ何も書いていない空行が生まれます。（@<img>{startaws32}）左下に「-- INSERT --」と表示されていたら「編集モード」です。
 
 //footnote[insertMode][ここでは初心者の方でも直感的に分かるよう「閲覧モード」「編集モード」と呼んでいますが、正しくは「ノーマルモード」「インサートモード」です。]
 
-
-//image[startaws32][i（アイ）を押すと「-- INSERT --」と表示される「編集モード」になった][scale=0.8]{
+//image[startaws32][o（オー）を押すと「-- INSERT --」と表示される「編集モード」になった][scale=0.8]{
 //}
 
-「編集モード」になるとファイルが編集できるようになります。それでは「ZONE="UTC"」を「ZONE="Asia/Tokyo"」（@<img>{startaws33}）に書き換えてください。
+「編集モード」になるとファイルが編集できるようになります。一番下に次の1行を書き足して（@<img>{startaws33}）ください。
 
-//image[startaws33][「ZONE="UTC"」を「ZONE="Asia/Tokyo"」に書き換える][scale=0.8]{
+//cmd{
+locale: ja_JP.UTF-8
+//}
+
+//image[startaws33][「locale: ja_JP.UTF-8」を書き足す][scale=0.8]{
 //}
 
 「編集モード」のままだと保存ができないので書き終わったらESCキーを押します。すると左下の「-- INSERT --」が消えて再び「閲覧モード」になります。（@<img>{startaws34}）
@@ -901,124 +962,34 @@ vi（ブイアイ）@<fn>{remoteSsh}はテキストファイルを編集する�
 
 //footnote[q][保存せずに強制終了（quit!）という命令なのでq!です。]
 
-編集できたらcat（キャット）コマンド@<fn>{cat}でファイルの中身を確認してみましょう。次のように表示されたら、ちゃんと編集できています。
-
-//cmd{
-# cat /etc/sysconfig/clock
-ZONE="Asia/Tokyo"
-UTC=true
-//}
+編集できたらcat（キャット）コマンド@<fn>{cat}でファイルの中身を確認してみましょう。
 
 //footnote[cat][catは猫ではなく「conCATenate files and print on the standard output」の略だそうです。筆者はいつも「猫がファイルの中身を全部出して見せてくれてるんだ」と考えることでちょっぴり幸せになっています。]
 
-さらにlnコマンド@<fn>{ln}でシンボリックリンクを作ります。シンボリックリンクはWindowsでいうところのショートカットみたいなものです。成功した場合は、画面に何も表示されませんので安心してください。
-
-//footnote[ln][lnはlinkの略です。]
-
 //cmd{
-# ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-
-代わりにこれでよさそう
-# timedatectl set-timezone Asia/Tokyo
-/etc/sysconfig/clock は変化ない
+# cat /etc/cloud/cloud.cfg
 //}
 
-ちなみに入力しているパス（path）は入力途中でタブを押すと自動的に補完されるので、全部手打ちしなくても大丈夫です。たとえば
-
-//cmd{
-# ln -sf /usr/sh
-//}
-
-まで打ってからTabキーを押すと次のように自動補完されます
-
-//cmd{
-# ln -sf /usr/share/
-//}
-
-シンボリックリンクが生成されたかlsコマンド@<fn>{ls}で確認してみましょう。（@<img>{startaws36}）
-
-//cmd{
-# ls -l /etc/localtime
-//}
-
-//footnote[ls][lsはlistの略で、名前のとおりファイルを一覧表示してくれるコマンドです。-lはlongの略で「詳細を表示」というオプションです。]
-
-//image[startaws36][シンボリックリンクが生成された][scale=0.8]{
-//}
-
-「->」の矢印が実体であるファイルを指しているので、シンボリックリンクができていることがわかります。
-
-==== locale（言語）の設定
-
-続いてlocale（言語）の設定をします。今は言語の設定が英語になっているのでエラーメッセージなども英語で表示されますが、分かりやすくするため言語設定を日本語に変更しましょう。
-
-//cmd{
-# vi /etc/sysconfig/i18n
-
-代わりにこれでよさそう
-localectl set-locale LANG=ja_JP.UTF-8
-一度exitで抜けて、再度rootになる
-//}
-
-先ほどと同じviコマンドでファイルを開いたらi（アイ）で「編集モード」にして「en_US」の部分を「ja_JP」に書き換えてください。
-
-//cmd{
-# vi /etc/sysconfig/i18n
-LANG=en_US.UTF-8
-↓
-LANG=ja_JP.UTF-8
-//}
-
-書き終わったらESCキーを押して「閲覧モード」に戻り「:wq」で保存します。編集できたらcat（キャット）コマンドでファイルの中身を確認してみましょう。
-
-//cmd{
-# cat /etc/sysconfig/i18n
-LANG=ja_JP.UTF-8
-//}
-
-通常のLinuxサーバであればこの設定だけでいいのですが、Amazon Linuxの場合、AMIからインスタンスを復元@<fn>{restore}すると今修正した「LANG=ja_JP.UTF-8」がそっと元の「LANG=en_US.UTF-8」に戻ってしまいます。
-
-//footnote[restore][「AMIからインスタンスを復元」については@<chapref>{backup}と@<chapref>{balancing}で解説します。]
-
-元に戻らないよう次のファイルも編集しておきましょう。
-
-//cmd{
-# vi /etc/cloud/cloud.cfg
-//}
-
-viコマンドでファイルを開いたらi（アイ）で「編集モード」にして一番下に次の1行を書き足してください。
-
-//cmd{
-locale: ja_JP.UTF-8
-//}
-
-書き終わったらESCキーを押して「閲覧モード」に戻り「:wq」で保存します。編集できたらcatコマンドでファイルの中身を確認してみましょう。
+次のように表示されたら、ちゃんと編集できています。
 
 //cmd{
 # cat /etc/cloud/cloud.cfg
-# WARNING: Modifications to this file may be overridden by files in
+# WARNING: Modifications to this file may be overridden by files
+ in
 # /etc/cloud/cloud.cfg.d
 
-# If this is set, 'root' will not be able to ssh in and they 
-# will get a message to login instead as the default user (ec2-user)
+users:
+ - default
+
 disable_root: true
+ssh_pwauth:   false
 
-# This will cause the set+update hostname module to not operate (if true)
-preserve_hostname: true
-
-datasource_list: [ Ec2, None ]
-
-repo_upgrade: security
-repo_upgrade_exclude:
- - kernel
- - nvidia*
- - cudatoolkit
+（中略）
 
 mounts:
  - [ ephemeral0, /media/ephemeral0 ]
  - [ swap, none, swap, sw, "0", "0" ]
 # vim:syntax=yaml
-
 locale: ja_JP.UTF-8
 //}
 
@@ -1031,18 +1002,22 @@ locale: ja_JP.UTF-8
 //cmd{
 # history
     1  sudooo su -
-    2  yum install -y jwhois mysql
-    3  yum install -y php72 php72-mbstring php72-mysqlnd
-    4  chkconfig --add httpd
-    5  chkconfig httpd on
-    6  chkconfig --list httpd
-    7  date
-    8  vi /etc/sysconfig/clock
-    9  cat /etc/sysconfig/clock
-   10  ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-   11  ls -l /etc/localtime
-   12  vi /etc/sysconfig/i18n
-   13  cat /etc/sysconfig/i18n
+    2  yum update -y
+    3  yum install whois
+    4  yum install https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
+    5  yum install mysql-community-client -y
+    6  amazon-linux-extras install php7.4 -y
+    7  yum install php php-mbstring -y
+    8  which amazon-linux-extras
+    9  yum install httpd -y
+   10  systemctl enable --now httpd
+   11  systemctl is-enabled httpd
+   12  curl localhost
+   13  timedatectl set-timezone Asia/Tokyo
+   14  ls -l /etc/localtime
+   15  localectl set-locale LANG=ja_JP.UTF-8
+   16  vi /etc/cloud/cloud.cfg
+   17  cat /etc/cloud/cloud.cfg
 //}
 
 とても便利なのですが、このままだと「そのコマンドをいつ実行したのか？」という日時が分かりません。また最大1000件までしか保存されないためそれ以上前の履歴を追うことができません。設定を変更して最大で2000件まで保存されて、日時も表示されるようにしましょう。
@@ -1051,12 +1026,12 @@ locale: ja_JP.UTF-8
 # vi /etc/bashrc
 //}
 
-先ほどと同じviコマンドでファイルを開くと、最初は「閲覧モード」になっています。「閲覧モード」のままでshift+gを押してファイルの最終行へ移動（@<img>{startaws37}）してください。
+先ほどと同じviコマンドでファイルを開くと、最初は「閲覧モード」になっています。「閲覧モード」のままでshift+Gを押してファイルの最終行へ移動（@<img>{startaws37}）してください。
 
-//image[startaws37][shift+gで最終行に移動した][scale=0.8]{
+//image[startaws37][shift+Gで最終行に移動した][scale=0.8]{
 //}
 
-最終行に移動したらi（アイ）で「編集モード」にして次の2行を追記してください。
+最終行に移動したらo（オー）で「編集モード」にして次の2行を追記してください。
 
 //cmd{
 HISTTIMEFORMAT='%F %T '
@@ -1073,9 +1048,12 @@ HISTFILESIZE=2000
 
 //footnote[tail][tailコマンドは名前のとおりファイルの尻尾、つまり末尾を表示するコマンド。引数で「-2」と指定すれば末尾から2行、「-10」と指定すれば末尾から10行が表示されます。]
 
-以上でOSの基本設定は終了です。変更した設定を有効にするためreboot（リブート）コマンドでサーバを再起動しておきましょう。
+以上でOSの基本設定は終了です。historyコマンドに-aオプションを付けて、現在のセッションの履歴を履歴ファイルに保存@<fn>{historySave}したら、変更した設定を有効にするためreboot（リブート）コマンドでサーバを再起動しておきましょう。
+
+//footnote[historySave][historyはexitコマンドでrootからec2-userに戻るときや、ターミナルを閉じるときに履歴が書き込まれるため、きちんとexitせずに×を押してウィンドウを閉じたり、ネットワークがぶつっと切れてしまったり、サーバをいきなりrebootしたりすると、そのセッションでの履歴は記録されずに消えてしまうのです。]
 
 //cmd{
+# history -a
 # reboot
 //}
 
@@ -1084,43 +1062,46 @@ SSHの接続も切れてしまいますが、割とすぐに再起動します�
 //image[startaws38][さっきと同じ設定で接続してみよう][scale=0.8]{
 //}
 
-接続できたらdateコマンドでサーバの時間を確認してみましょう。サーバのタイムゾーンが東京になって時間のずれはなくなり、言語も日本語に変わったことで次のように表示されるはずです。
+接続できたらdateコマンドでサーバの時間@<fn>{date}を確認してみましょう。サーバのタイムゾーンが東京になって時間のずれはなくなり、言語も日本語に変わったことで次のように表示されるはずです。
+
+//footnote[date][日時を見ると、この章を書いている間に2日間が経過したことが分かります。明後日（2020年12月26日）から技術書典10ですね。つらい。]
 
 //cmd{
 $ date
-2018年  9月  1日 土曜日 19:58:14 JST
+2020年 12月 24日 木曜日 22:55:29 JST
 //}
 
 続いてrootになってhistoryコマンドを叩いてみましょう。rootになったときのメッセージも日本語に変わっていますね。
 
 //cmd{
 $ sudo su -
-最終ログイン: 2018/09/01 (土) 20:00:12 JST日時 pts/0
+最終ログイン: 2020/12/24 (木) 22:10:51 JST日時 pts/0
 
 # history
-    1  2018-09-01 20:01:41 sudooo su -
-    2  2018-09-01 20:01:41 ip addr
-    3  2018-09-01 20:01:41 hostname
-    4  2018-09-01 20:01:41 chkconfig --add httpd
-    5  2018-09-01 20:01:41 chkconfig httpd on
-    6  2018-09-01 20:01:41 chkconfig --list httpd
-    7  2018-09-01 20:01:41 date
-    8  2018-09-01 20:01:41 vi /etc/sysconfig/clock
-    9  2018-09-01 20:01:41 cat /etc/sysconfig/clock
-   10  2018-09-01 20:01:41 ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-   11  2018-09-01 20:01:41 ls -l /etc/localtime
-   12  2018-09-01 20:01:41 vi /etc/sysconfig/i18n
-   13  2018-09-01 20:01:41 cat /etc/sysconfig/i18n
-   14  2018-09-01 20:01:41 vi /etc/bashrc
-   15  2018-09-01 20:01:41 tail -2 /etc/bashrc
-   16  2018-09-01 20:01:41 reboot
-   17  2018-09-01 20:02:58 date
-   18  2018-09-01 20:03:01 history
+    1  2020-12-24 22:57:44 sudooo su -
+    2  2020-12-24 22:57:44 yum update -y
+    3  2020-12-24 22:57:44 yum install whois
+    4  2020-12-24 22:57:44 yum install https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
+    5  2020-12-24 22:57:44 yum install mysql-community-client -y
+    6  2020-12-24 22:57:44 amazon-linux-extras install php7.4 -y
+    7  2020-12-24 22:57:44 yum install php php-mbstring -y
+    8  2020-12-24 22:57:44 which amazon-linux-extras
+    9  2020-12-24 22:57:44 yum install httpd -y
+   10  2020-12-24 22:57:44 systemctl enable --now httpd
+   11  2020-12-24 22:57:44 systemctl is-enabled httpd
+   12  2020-12-24 22:57:44 curl localhost
+   13  2020-12-24 22:57:44 timedatectl set-timezone Asia/Tokyo
+   14  2020-12-24 22:57:44 ls -l /etc/localtime
+   15  2020-12-24 22:57:44 localectl set-locale LANG=ja_JP.UTF-8
+   16  2020-12-24 22:57:44 vi /etc/cloud/cloud.cfg
+   17  2020-12-24 22:57:44 cat /etc/cloud/cloud.cfg
+   17  2020-12-24 22:57:44 history -a
+  160  2020-12-24 22:57:52 history
 //}
 
-設定変更してrebootするまでは日時が記録されていなかったためすべて同じ日時になっていますが、reboot後はちゃんと実行した日時が表示されています。@<fn>{historySave}
+設定変更してrebootするまでは日時が記録されていなかったためすべて同じ日時になっていますが、reboot後はちゃんと実行した日時が表示@<fn>{afterReboot}されています。
 
-//footnote[historySave][ちなみにhistoryはターミナルを「exit」して閉じるときに履歴が書き込まれるため、前述の「exit」で抜けずに赤い×を押してウィンドウを閉じたり、ネットワークがぶつっと切れてしまったりするとその分は記録されずに消えてしまいます。]
+//footnote[afterReboot][あれ？さっき叩いたdateがhistoryにないぞ、と思われるかもしれませんが、rootの履歴とec2-userの履歴は別々なので、ec2-userのときに叩いたdateは表示されていないだけです。]
 
 以上で「サーバを立てる」という作業はおしまいです。
 
@@ -1132,7 +1113,7 @@ $ sudo su -
 
 皆さんがパソコン使うときはモニタに表示された画面を見ながらキーボードとマウスを使って「フォルダを開いて先週作ったWordファイルを探す」とか「Wordファイルを開いて今週の報告書を書く」というような操作をすると思います。フォルダを開くときは「ダブルクリック」をして、書いた内容を保存するときは「上書き保存する」ボタンを押しますよね。
 
-サーバも同じです。サーバを使うときは「ターミナル」という画面を開いて操作します。ディレクトリ@<fn>{dir}を開いて移動するときはダブルクリックの代わりにcd@<fn>{cd}というコマンドを叩いて移動しますし、ディレクトリの中を見るときもダブルクリックでフォルダを開く代わりにlsコマンドを叩いて見ます。
+サーバも同じです。サーバを使うときは「ターミナル」という画面を開いて操作します。ディレクトリ@<fn>{dir}を開いて移動するときは、フォルダをダブルクリックする代わりにcd@<fn>{cd}というコマンドを叩いて移動しますし、ディレクトリの中を見るときもダブルクリックでフォルダを開く代わりにlsコマンドを叩いて見ます。
 
 //footnote[dir][Linuxではフォルダのことをディレクトリと呼びます。]
 //footnote[cd][change directoryの略。]
