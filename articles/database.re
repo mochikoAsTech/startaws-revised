@@ -14,17 +14,17 @@ WordPressを使うにはMySQLというデータベースが必要です。
 //image[startaws124][WordPressで作ったおしゃれなブログ][scale=0.8]{
 //}
 
-CMSとはContents Management Systemの略で、@<ttb>{ウェブサイトのコンテンツを管理したり、ウェブページを更新したりするためのソフト}のことです。CMSがあればHTMLやCSSなどを自分で直接編集しなくても、Wordのように文章を書いてレイアウトを整え「更新」をクリックするだけでサイトが更新できます。
+CMSとはContents Management Systemの略で、@<ttb>{ウェブサイトのコンテンツを管理したり、ウェブページを更新したりするためのソフト}のことです。CMSがあればHTMLやCSSなどを自分で直接編集しなくても、Wordのように文章を書いてレイアウトを整え、「更新」をクリックするだけでサイトが更新できます。
 
-CMSにはWordPress（ワードプレス）とMovable Type（ムーバブル・タイプ）というツートップがあるのですが、どちらも個人利用であれば無料で使うことができます。今回はCMS界でトップシェアを誇るWordPressを使えるように環境を構築していきましょう。
+日本国内で人気のCMSはWordPress（ワードプレス）やMovable Type（ムーバブル・タイプ）ですが、どちらも個人利用であれば無料で使うことができます。今回はCMS界でトップシェアを誇るWordPressを使えるように環境を構築していきましょう。
 
 WordPressの管理画面でブログ記事を書いて保存すると、記事のデータはデータベースに保存されます。そしてページを表示するときはデータベースからデータを取ってきて画面が構成されます。そのためWordPressを使うにはMySQLというデータベースが必須となっています。
 
 ===[column] 【コラム】MySQLとMariaDB
 
-データベースはOracle DatabaseやPostgreSQLなどMySQL以外にも色々な種類があるのですが、その中でMySQLはもっとも普及しているデータベースでシェア全体の8割以上を占めています。
+データベースには、Oracle DatabaseやPostgreSQLなど色々な種類があるのですが、その中でもMySQLは非常に普及率の高いデータベースです。
 
-MySQLは元々はMySQL ABという会社が開発してオープンソースで公開していましたが、2008年にMySQL ABがSun Microsystemsに買収され、さらに2009年にSunがOracleに買収されたため現在はOracleのものになっています。Oracleに買収された後もありがたいことにMySQLは引き続きオープンソースで公開されており現在も無償で使えますが、OracleはもともとOracle Databaseという有償のデータベースも販売しているためMySQLはその競合にあたり、今は平気でもいつかはサポートが終了したりオープンソースで公開されなくなるのでは？という懸念もあります。
+MySQLは、元々MySQL ABという会社が開発してオープンソースで公開していましたが、2008年にMySQL ABがSun Microsystemsに買収され、さらに2009年にSunがOracleに買収されたため、現在はOracleのものになっています。Oracleに買収された後も、ありがたいことにMySQLは引き続きオープンソースで公開されており、2020年12月現在も無償で使えます。しかしOracleはもともとOracle Databaseという有償のデータベースも販売しているため、MySQLはその競合にあたり、今は平気でもいつかはサポートが終了したりオープンソースで公開されなくなるのでは？という懸念もあります。
 
 またMySQLを最初に作った開発者はすでにOracleを離れており、MariaDBというMySQLから派生した別のデータベースを開発しています。このことからLinuxのディストリビューションであるCentOS 6やAmazon LinuxではMySQLが採用されていましたが、CentOS 7及びAmazon Linux 2からはMariaDBに切り替わっています。しかもyumでMySQLをインストールしようとすると、何も言わずにそーっとMariaDBがインストールされる落とし穴仕様です。サーバの仕様を「OSはCentOS 7でDBはMySQLです」と決めていたのに、環境構築後によくよく確認したら入っていたのはMariaDBだった、というようなことにならないようご注意ください。
 
@@ -38,17 +38,15 @@ MySQLは元々はMySQL ABという会社が開発してオープンソースで�
 
 AWSでMySQLを使いたいとき、EC2でインスタンスを作成してyumでMySQLをインストールする@<fn>{apache}方法と、Amazon RDSというサービスを使う方法があります。
 
-//footnote[apache][サーバにApacheをインストールしてウェブサーバを作ったのと同じように、MySQLをインストールしてデータベースサーバを作る、ということです。既にMySQLがインストールされたAMIからインスタンスを作ることもできます。]
+//footnote[apache][先ほどサーバにApacheをインストールしてウェブサーバを作ったのと同じように、MySQLをインストールしてデータベースサーバを作る、ということです。既にMySQLがインストールされたAMIからインスタンスを作ることもできます。]
 
-Amazon RDSはAmazon Relational Database Serviceの略で、ざっくり言うとデータベースを提供してくれるサービスです。データベースに接続することはできますが、MySQLが動いているサーバにSSHでログインすることはできません。RDSではデータベースエンジンとしてMySQLだけでなくAmazon Aurora@<fn>{aurora}、Microsoft SQL Server、Oracle、PostgreSQLなども選択可能です。
+Amazon RDSはAmazon Relational Database Serviceの略で、ざっくり言うとデータベースを提供してくれるサービスです。データベースに接続することはできますが、MySQLが動いているサーバに直接SSHでログインすることはできません。RDSではデータベースエンジンとしてMySQLだけでなくAmazon Aurora@<fn>{aurora}、Microsoft SQL Server、Oracle、PostgreSQLなども選択可能です。
 
 //footnote[aurora][本当は「MySQLの最大5倍のパフォーマンス」といわれるMySQL互換のデータベース、Amazon Auroraを使いたかったのですがAWSの無料利用枠に含まれないため本書では断念しました。WordPressはAuroraでも動くようです。]
 
 自力でインストールするのではなくRDSを使うことで、データのバックアップや脆弱性パッチの適用といった色々な面倒ごとをRDSにお任せできます。一方でRDSというサービス上で用意されていない機能は、たとえMySQLで実装されていても使えないため自由度は若干下がります。
 
-旅行代理店のパック旅行を申し込めば、飛行機のチケットを取ってホテルの予約してレンタカーを借りて…といったこまごましたことを自分でしなくて済むから楽だけれど、代わりにできることや行けるところは限られていて自由度が下がる、というのと同じですね。
-
-今回はWordPressと繋いで使うだけで自由度の高さは求めていないため運用コストの低いRDSを選択します。
+旅行代理店のパック旅行を申し込めば、飛行機のチケットを取ってホテルの予約してレンタカーを借りて…といったこまごましたことを自分でしなくて済むから楽だけれど、代わりにできることや行けるところは限られていて自由度が下がる、というのと同じですね。今回はWordPressと繋いで使うだけで、自由度の高さは求めていないため、運用コストの低いRDSを選択します。
 
 == インスタンスを立てる事前準備
 
@@ -69,9 +67,9 @@ RDSでのインスタンス作成に先駆けて、パラメータグループ�
 //image[startaws84][「パラメータグループの作成」をクリック][scale=0.8]{
 //}
 
-パラメータグループファミリーのプルダウンから「mysql5.7」を選択して、グループ名に「start-aws-parameter-group」、説明に「Supports Japanese」と入力したら「作成」をクリック（@<img>{startaws85}）します。
+パラメータグループファミリーのプルダウンから「mysql8.0」を選択します。グループ名に「start-aws-parameter-group」、説明に「Supports Japanese」と入力したら「作成」をクリック（@<img>{startaws85}）します。
 
-//image[startaws85][「mysql5.7」を選択してグループ名と説明を入力したら「作成」をクリック][scale=0.8]{
+//image[startaws85][「mysql8.0」を選択してグループ名と説明を入力したら「作成」をクリック][scale=0.8]{
 //}
 
 パラメータグループの一覧に、今作成した「start-aws-parameter-group」が表示されました。「start-aws-parameter-group」をクリック（@<img>{startaws86}）してください。
@@ -79,86 +77,39 @@ RDSでのインスタンス作成に先駆けて、パラメータグループ�
 //image[startaws86][「start-aws-parameter-group」をクリック][scale=0.8]{
 //}
 
-すると「パラメータ」がたくさん表示（@<img>{startaws89}）されました。パラメータというのはMySQLにおけるさまざまな設定値のことです。Apacheにhttpd.confという設定ファイルがあったように、MySQLにはmy.cnfという設定ファイルがあるのですが、RDSではmy.cnfを直接書き換える代わりにこのパラメータを編集します。
+すると「パラメータ」がたくさん表示（@<img>{startaws89}）されました。パラメータというのはMySQLにおけるさまざまな設定値のことです。Apacheにhttpd.confという設定ファイルがあったように、MySQLにはmy.cnfという設定ファイルがあるのですが、RDSではmy.cnfを直接書き換える代わりにこのパラメータを変更します。
 
 //image[startaws89][「パラメータ」がたくさん表示された][scale=0.8]{
 //}
 
-先ほど作ったパラメータグループというのはこのパラメータをまとめたグループのことなのですが、この後RDSでインスタンスを作るときに「どのパラメータグループを使用するか？」という選択が出てくるため、インスタンスを作る前にパラメータグループを作っておく必要があったのです。
+先ほど作ったパラメータグループというのは、このパラメータをまとめたグループのことなのですが、この後RDSでデータベースのインスタンスを作るときに「どのパラメータグループを使用するか？」という選択が出てくるため、インスタンスを作る前にパラメータグループを作っておく必要があったのです。
 
 === パラメータの設定
 
-ここからは全部で8個のパラメータの値を設定していきます。似たような名前がたくさん出てきますが間違えないようにしっかりついてきてください。
+ここでは2つのパラメータの値を設定します。@<fn>{mysql57}
 
-先ずは「フィルタ パラメータ」と表示されているところに「character_set」と入力して検索（@<img>{startaws87}）します。検索結果が表示されたら右上にある「パラメータの編集」ボタンをクリックしてください。
+//footnote[mysql57][日本語や絵文字を文字化けさせないため、MySQL5.7のときは値を「utf8mb4」に変更する必要があったcharacter_set_client、character_set_connection、character_set_database、character_set_results、character_set_serverという5つのパラメータですが、MySQL8ではデフォルト値が「utf8mb4」になったため、設定不要となりました。詳しくはMySQL 8.0 Reference Manualの「5.1.8 Server System Variables」を参照してください。 @<href>{https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html}]
 
-//image[startaws87][「character_set」でパラメータを検索][scale=1]{
+先ずは「フィルタ パラメータ」と表示されているところに「collation_server」と入力して検索（@<img>{startaws90}）します。検索結果が表示されたら右上にある「パラメータの編集」ボタンをクリックしてください。
+
+//image[startaws90][「collation_server」でパラメータを検索][scale=0.8]{
 //}
 
-そして次の5つのパラメータで値を「utf8mb4」に変更（@<img>{startaws88}）します。
+「collation_server」というパラメータの値を、プルダウンで「utf8mb4_bin」（@<img>{startaws92}）にします。@<fn>{collationServer}
 
- 1. character_set_client
- 2. character_set_connection
- 3. character_set_database
- 4. character_set_results
- 5. character_set_server
+//footnote[collationServer][このパラメータをデフォルト値の「utf8mb4_0900_ai_ci」のままにしておくと、濁音半濁音や、大文字小文字を区別しないため、たとえば「カート」で検索したときに「カード」も引っかかったり、正しいパスワードは「password」なのに「PASSWORD」と入力したときもログインできてしまったりします。]
 
-画面上、上から4つめの「character_set_filesystem」は変更しませんので注意してください。画面には6つのパラメータが表示されていますが、utf8mb4に変更するのはそのうちの5つだけです。
-
-//image[startaws88][5つのパラメータで値を「utf8mb4」にして「変更の保存」をクリック][scale=1]{
+//image[startaws92][「collation_server」の値を「utf8mb4_bin」にする][scale=0.8]{
 //}
 
-今変更した5つのパラメータはそれぞれ次のような設定項目です。
+続いて「init_connect」で検索（@<img>{startaws93}）します。「init_connect」@<fn>{initConnect}というパラメータの値に、「SET NAMES utf8mb4;」と記入したら、右上にある「変更の保存」をクリックしてください。
 
- * character_set_client : クライアントから送られてくるSQLステートメントの文字コード
- * character_set_connection : クエリ実行時にリテラル及び数字から文字列への変換に使用される文字コード
- * character_set_database : デフォルトデータベースで使用される文字コード
- * character_set_results : クライアントへ返す実行結果やエラーメッセージで使用される文字コード
- * character_set_server : サーバのデフォルト文字コード
+//footnote[initConnect][「init_connect」というパラメータには、「データベースへ接続しにきた各クライアントに対してサーバが実行するSQL文」を指定します。]
 
-難しそうなことが書いてありますが、要は@<ttb>{これらのパラメータを「utf8mb4」に設定しておくと日本語や絵文字が文字化けしなくなる}という効能だけ覚えておいてください。逆に言えばこれらを設定しないとWordPressの記事で日本語や絵文字を使ったときに文字化けしてしまいます。それでは右上にある「変更の保存」をクリックしてください。
-
-ちなみに次の2つは似たような名前なのですがこちらは何も設定しなくて大丈夫です。
-
- * character_set_filesystem : ファイルシステムの文字コード。デフォルト設定のままでよいため設定不要。
- * character_set_system : サーバで識別子を格納するために使用される文字コードで値は常にutf8。そもそもパラメータが存在しないため設定不要。
-
-1～5つめの設定が済んだら今度は「collation」で検索（@<img>{startaws90}）します。検索結果が表示されたら右上にある「パラメータの編集」ボタンをクリックしてください。
-
-//image[startaws90][「collation」でパラメータを検索][scale=0.8]{
+//image[startaws93][「init_connect」の値に「SET NAMES utf8mb4;」と記入して「変更の保存」をクリック][scale=0.8]{
 //}
 
-そして次の2つのパラメータで値を「utf8mb4_general_ci」に変更して、右上にある「変更の保存」をクリックしてください。
-
- 6. collation_server（@<img>{startaws92}）
- 7. collation_connection（@<img>{startaws91}）
-
-//image[startaws92][「collation_server」の値を「utf8mb4_general_ci」にする][scale=0.8]{
-//}
-
-//image[startaws91][「collation_connection」の値も「utf8mb4_general_ci」にして「変更の保存」をクリック][scale=0.8]{
-//}
-
-今変更した2つのパラメータはそれぞれ次のような設定項目です。
-
- * collation_server : character_set_serverに対する照合順序
- * collation_connection : character_set_connectionに対する照合順序
-
-7つめまでの設定が済んだら最後に「init_」で検索（@<img>{startaws93}）します。検索結果が表示されたら右上にある「パラメータの編集」ボタンをクリックしてください。
-
-//image[startaws93][「init_」でパラメータを検索][scale=0.8]{
-//}
-
-そして次のパラメータで値に「SET NAMES utf8mb4;」と記入（@<img>{startaws94}）したら、右上にある「変更の保存」をクリックしてください。
-
- 8. init_connect
-
-//image[startaws94][値に「SET NAMES utf8mb4;」と記入して「変更の保存」をクリック][scale=0.8]{
-//}
-
-今変更した「init_connect」という項目は「サーバから接続元の各クライアントに対して実行される文字列」です。
-
-8個のパラメータの値を設定したのでこれでパラメータグループの作成は完了です。続いてオプショングループも作成します。
+2つのパラメータの値を変更したので、これでパラメータグループの作成とパラメータの設定は完了です。続いてオプショングループも作成します。
 
 === オプショングループを作成
 
@@ -167,7 +118,7 @@ RDSでのインスタンス作成に先駆けて、パラメータグループ�
 //image[startaws95][「オプショングループ」で「グループの作成」をクリック][scale=0.8]{
 //}
 
-名前に「start-aws-option-group」、説明に「for WordPress」と記入します。エンジンは「mysql」、メジャーエンジンのバージョンは「5.7」を選択したら「作成」をクリック（@<img>{startaws96}）します。
+名前に「start-aws-option-group」、説明に「for WordPress」と記入します。エンジンは「mysql」、メジャーエンジンのバージョンは「8.0」を選択したら「作成」をクリック（@<img>{startaws96}）します。
 
 //image[startaws96][オプショングループの詳細を設定したら「作成」をクリック][scale=0.8]{
 //}
@@ -179,99 +130,116 @@ RDSでのインスタンス作成に先駆けて、パラメータグループ�
 
 == RDSでインスタンスを立てよう
 
-左メニューの「インスタンス」をクリック（@<img>{startaws98}）してから、右上にある「データベースの作成」をクリックします。
+左メニューの「データベース」をクリック（@<img>{startaws98}）してから、右上にある「データベースの作成」をクリックします。
 
 //image[startaws98][「インスタンス」で「データベースの作成」をクリック][scale=0.8]{
 //}
 
 ここから3つのステップでRDSのインスタンスを作成していきます。
 
-=== ステップ 1:エンジンの選択
+=== データベース作成方法を選択
 
-最下部にある「RDS無料利用枠の対象オプションのみを有効化」にチェック（@<img>{startaws99}）を入れて、MySQLを選択したら「次へ」をクリックします。
+データベース作成方法は「標準作成」（@<img>{startaws99-1}）のままで構いません。
 
-//image[startaws99][MySQLを選択したら「次へ」をクリック][scale=1]{
+//image[startaws99-1][データベース作成方法は「標準作成」のまま][scale=0.8]{
 //}
 
-=== ステップ 2:DB 詳細の指定
+=== エンジンのオプション
 
-「インスタンスの仕様」は何も変更せず@<fn>{multiAZ}そのままで構いません。
+エンジンのタイプは「MySQL」、バージョンは「MySQL 8.0.21」を選択（@<img>{startaws99-2}）します。
 
-//footnote[multiAZ][「インスタンスの仕様」に「マルチAZ配置（Multi-AZ）」という設定があります。Multi-AZとは、あらかじめメインのRDSインスタンスとは別のアベイラビリティゾーンにレプリカを待機させておいて、何らかの障害でメインのRDSインスタンスが停止してしまったら自動的に待機していたインスタンスに切り替わる仕組みです。Multi-AZはAWSの無料利用枠に含まれないため本書ではSingle-AZの構成です。]
+//image[startaws99-2][エンジンのタイプは「MySQL」、バージョンは「MySQL 8.0.21」を選択][scale=0.8]{
+//}
 
-下の方にスクロールしたら設定（@<img>{startaws100}）を次のようにします。（@<table>{db}）
+=== テンプレート
+
+テンプレートは「無料利用枠」を選択（@<img>{startaws99-3}）します。
+
+//image[startaws99-3][テンプレートは「無料利用枠」を選択][scale=0.8]{
+//}
+
+=== 設定
+
+設定（@<img>{startaws100}）は次のようにします。（@<table>{db}）
 
 //table[db][設定]{
 DBインスタンス識別子	start-aws-db-instance
-マスターユーザの名前	start_aws_dbuser
+マスターユーザ名	start_aws_dbuser
 マスターパスワード	start_aws_db_password
-パスワードの確認	マスターパスワードと同じ
+パスワードを確認	マスターパスワードと同じ
 //}
 
-ここで設定した「マスターユーザの名前」と「マスターパスワード」は、この後でWordPressがデータベースに接続するときに必要となります。入力したら「次へ」をクリックします。
+ここで設定した「マスターユーザ名」と「マスターパスワード」は、この後でWordPressをデータベースに繋ぐときに必要となります。
 
 //image[startaws100][「設定」を入力したら「次へ」をクリック][scale=0.8]{
 //}
 
-=== ステップ 3:[詳細設定] の設定
+DBインスタンスサイズ、ストレージ、可用性と耐久性@<fn>{multiAZ}、接続、データベース認証は何も変更せずそのままで構いません。
 
-一番上の「ネットワーク&セキュリティ」は何も変更せずそのままで構いません。その下の「データベースの設定」（@<img>{startaws101}）は次のようにします。（@<table>{dbSchema}）
+//footnote[multiAZ][「可用性と耐久性」に「マルチAZ配置」という設定があります。マルチAZ配置とは、あらかじめメインのRDSインスタンスとは別のアベイラビリティゾーンにレプリカを待機させておいて、何らかの障害でメインのRDSインスタンスが停止してしまったら自動的に待機していたインスタンスに切り替わる仕組みです。マルチAZ配置はAWSの無料利用枠に含まれないため本書ではシングルAZ配置の構成です。]
 
-//table[dbSchema][データベースの設定]{
-データベースの名前	start_aws_wordpress_dbname
+=== 追加設定
+
+「追加設定」を開いて、「データベースの選択肢」（@<img>{startaws101}）を次のようにします。（@<table>{dbSchema}）
+
+//table[dbSchema][データベースの選択肢]{
+最初のデータベース名	start_aws_wordpress_dbname
 DBパラメータグループ	start-aws-parameter-group
 オプショングループ	start-aws-option-group
 //}
 
-//image[startaws101][「データベースの設定」を入力][scale=0.8]{
+//image[startaws101][「データベースの選択肢」を入力][scale=0.8]{
 //}
 
-ここで設定した「データベースの名前」も、この後でWordPressがデータベースに接続するときに必要となります。「データベースの設定」のそれ以外の項目や、さらに下にある「暗号化」「バックアップ」「モニタリング」「ログのエクスポート」「メンテナンス」@<fn>{maintenance}はすべてデフォルトのままで構いません。
+ここで設定した「最初のデータベース名」も、この後でWordPressをデータベースに繋ぐときに必要となります。「追加設定」のバックアップ、モニタリング、ログのエクスポート、メンテナンス@<fn>{maintenance}、削除保護はすべてそのままで構いません。
 
-//footnote[maintenance][ちなみに「メンテナンス」で「マイナーバージョン自動アップグレード」を選択していると、新しいバージョンが出たときにMySQLを自動でアップグレードして自動で再起動してしまいます。今回は構いませんが、重要なウェブサイトやサービスで何の予告もなくデータベースに繋がらなくなったら大変ですのでこちらは基本的に無効化しておきます。]
+//footnote[maintenance][ちなみに「メンテナンス」で「マイナーバージョン自動アップグレードの有効化」にチェックを入れていると、新しいバージョンが出たときにMySQLを自動でアップグレードして自動で再起動してしまいます。今回は構いませんが、重要なウェブサイトやサービスで何の予告もなくデータベースに繋がらなくなったら大変ですので、こちらは基本的に無効化しておきます。]
 
-「データベースの設定」を入力し終わったら「データベースの作成」をクリック（@<img>{startaws102}）します。
+「データベースの選択肢」を入力し終わったら「データベースの作成」をクリック（@<img>{startaws102}）します。
 
 //image[startaws102][「データベースの作成」をクリック][scale=0.8]{
 //}
 
 === セキュリティグループで3306番ポートの穴あけをしよう
 
-「DBインスタンスを作成中です。」と表示（@<img>{startaws103}）されたら「DBインスタンスの詳細の表示」をクリックします。RDSのインスタンスができあがるまで少し時間がかかりますので、その間に「このデータベースにはどこからの接続を許可するのか？」というセキュリティグループ@<fn>{securityGroupAgain}の設定をしておきましょう。
+「データベース start-aws-db-instance を作成しています。データベースが起動するまでに、数分かかることがあります。」と表示（@<img>{startaws103}）されたら「DB識別子」の列で「start-aws-db-instance」をクリックします。RDSのインスタンスができあがるまで少し時間がかかりますので、その間に「このデータベースにはどこからの接続を許可するのか？」というセキュリティグループ@<fn>{securityGroupAgain}の設定をしておきましょう。
 
-//image[startaws103][「DBインスタンスの詳細の表示」をクリック][scale=0.8]{
+//image[startaws103][「start-aws-db-instance」をクリック][scale=0.8]{
 //}
 
-//footnote[securityGroupAgain][何度か出てきていますがセキュリティグループはいわゆる「ファイアウォール」のことです。セキュリティグループってどんなものだったっけ？という方は@<chapref>{serverBuilding}でEC2のインスタンスを作るとき「ステップ6」で設定したことを思い出してください。]
+//footnote[securityGroupAgain][何度か出てきていますがセキュリティグループはいわゆる「ファイアウォール」のことです。セキュリティグループってどんなものだったっけ？という方は、@<chapref>{serverBuilding}でEC2のインスタンスを作るとき「ステップ6」で設定したことを思い出してください。]
 
 今作った「start-aws-db-instance」というRDSインスタンスの詳細が表示（@<img>{startaws104}）されます。
 
 //image[startaws104][「start-aws-db-instance」というRDSインスタンスの詳細][scale=0.8]{
 //}
 
-下の方にスクロールして「設定」（@<img>{startaws105}）を見てください。RDSインスタンスの手前に立ちはだかっているのは「rds-launch-wizard」という名前のセキュリティグループです。「rds-launch-wizard」をクリックしてください。
+下の方にスクロールして「接続とセキュリティ」（@<img>{startaws105}）を見てください。RDSインスタンスの手前に立ちはだかっているのは、「default」という名前のセキュリティグループであることが分かります。「default」をクリックしてください。
 
-//image[startaws105][セキュリティグループの「rds-launch-wizard」をクリック][scale=0.8]{
+//image[startaws105][セキュリティグループの「default」をクリック][scale=0.8]{
 //}
 
-「rds-launch-wizard」の「インバウンドルール」タブで「編集」をクリック（@<img>{startaws106}）します。
+「default」の「インバウンドルール」タブで「インバウンドルールを編集」をクリック（@<img>{startaws106}）します。
 
-//image[startaws106][「インバウンドルール」タブで「編集」をクリック][scale=0.8]{
+//image[startaws106][「インバウンドルール」タブで「インバウンドルールを編集」をクリック][scale=0.8]{
 //}
 
-データベースに記事データを保存したり、データベースへ記事データを取りに行ったりするのはEC2のインスタンス上で動いているWordPressですので、このセキュリティグループではEC2のインスタンスからRDSの「MySQL（ポート番号3306番）」へ通信できるように許可する設定をしてやらなければいけません。
+データベースに記事データを保存したり、データベースへ記事データを取りに行ったりするのは、EC2のインスタンス上で動いているWordPressです。そのためこのセキュリティグループでは、EC2のインスタンスからRDSの「MySQL（ポート番号3306番）」へ通信できるように許可する設定をしてやらなければいけません。
 
-ソースに書かれたIPアドレスを消して「ec2」と入力（@<img>{startaws107}）すると下に「ec2-security-group」が表示されますのでクリックしてください。
+タイプを「すべてのトラフィック」から「MySQL/Aurora」に変更します。ソースに「ec2-security-group」と入力（@<img>{startaws107}）すると、プルダウンに下に「ec2-security-group」が表示されますのでクリックしてください。
 
 //image[startaws107][「ec2」と入力して「ec2-security-group」が表示されたらクリック][scale=0.8]{
 //}
 
-ソースに「sg-0e0e65673a262e18f」のようなEC2のセキュリティグループIDが表示（@<img>{startaws108}）されたら「保存」をクリックします。
+ソースに「sg-0f65b9b3ccbccd4ca」のようなEC2のセキュリティグループIDが表示（@<img>{startaws108}）されたら、「ルールを保存」をクリックします。
 
-//image[startaws108][「保存」をクリック][scale=0.8]{
+//image[startaws108][「ルールを保存」をクリック][scale=0.8]{
 //}
 
-これでEC2のインスタンスからRDSのインスタンスの「MySQL（ポート番号3306番）」へ接続できるようになりました。
+「default」の「インバウンドルール」タブに、いま設定したルールが表示（@<img>{startaws108-2}）されています。これでEC2のインスタンスからRDSの「MySQL（ポート番号3306番）」へ接続できるようになりました。
+
+//image[startaws108-2][「ルールを保存」をクリック][scale=0.8]{
+//}
 
 === エンドポイントのドメイン名をメモしておこう
 
@@ -280,25 +248,23 @@ DBパラメータグループ	start-aws-parameter-group
 //image[startaws109][サービス＞データベース＞RDS][scale=0.8]{
 //}
 
-RDSダッシュボードを開いたら左メニューの「インスタンス」をクリック（@<img>{startaws110}）します。「start-aws-db-instance」というインスタンスのステータスが「利用可能」になっていたら「start-aws-db-instance」をクリックしてください。
+RDSダッシュボードを開いたら左メニューの「データベース」をクリック（@<img>{startaws110}）します。DB識別子の列の「start-aws-db-instance」をクリックしてください。
 
-//image[startaws110][左メニューの「インスタンス」＞「start-aws-db-instance」をクリック][scale=0.8]{
+//image[startaws110][左メニューの「データベース」＞「start-aws-db-instance」をクリック][scale=0.8]{
 //}
 
-下の方にスクロールすると「接続」のところに「エンドポイント」（@<img>{startaws111}）があります。この「start-aws-db-instance.cyjoha27mqmm.ap-northeast-1.rds.amazonaws.com」という「エンドポイント」は、後でWordPressからデータベースに接続するときに必要となります。長いのでパソコンのメモ帳にしっかりコピーペーストしておいてください。
+下の方にスクロールすると「接続とセキュリティ」のタブに「エンドポイント」（@<img>{startaws111}）があります。この「start-aws-db-instance.cesouf5kakle.ap-northeast-1.rds.amazonaws.com」という「エンドポイント」は、後でWordPressからデータベースに接続するときに必要となります。長いのでパソコンのメモ帳にしっかりコピーペーストしておいてください。
 
 //image[startaws111][「エンドポイント」をしっかりメモしておこう][scale=0.8]{
 //}
 
 === ウェブサーバから接続確認してみよう
 
-それではEC2のインスタンスからRDSのMySQLに接続できるか、mysqlコマンドを使って試してみましょう。いわゆる「ウェブサーバからデータベースへの疎通確認」ですね。MySQLに接続するときは先ほどメモしておいた
+それではEC2のインスタンスからRDSのMySQLに接続できるか、mysqlコマンドを使って試してみましょう。いわゆる「ウェブサーバからデータベースへの疎通確認」ですね。MySQLに接続するときは先ほどメモしておいた次の3つを使用します。
 
  * エンドポイント
  * マスターユーザの名前
  * マスターパスワード
-
-の3つを使用します。
 
 Windowsの方はRLoginを起動して「start-aws-instance」に接続してください。Macの方はターミナルで次のコマンドを実行してください。
 
@@ -315,7 +281,7 @@ $ mysql -h エンドポイント -u マスターユーザの名前 -p
 -hオプションは「接続先ホスト」を指定しています。-uオプションは「このユーザで」、-pオプションは「パスワード認証で」という意味です。筆者だったらこんなコマンドになります。
 
 //cmd{
-$ mysql -h start-aws-db-instance.cyjoha27mqmm.ap-northeast-1.rds.amazonaws.com
+$ mysql -h start-aws-db-instance.cesouf5kakle.ap-northeast-1.rds.amazonaws.com
         -u start_aws_dbuser -p
 ※実際は改行せずに1行で実行
 //}
@@ -334,10 +300,10 @@ Enter password:
 $ mysql -h エンドポイント -u マスターユーザの名前 -p
 Enter password: 
 Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 25
-Server version: 5.7.22-log Source distribution
+Your MySQL connection id is 18
+Server version: 8.0.21 Source distribution
 
-Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
 
 Oracle is a registered trademark of Oracle Corporation and/or its
 affiliates. Other names may be trademarks of their respective
@@ -356,13 +322,12 @@ mysql> show databases;
 | Database                   |
 +----------------------------+
 | information_schema         |
-| innodb                     |
 | mysql                      |
 | performance_schema         |
 | start_aws_wordpress_dbname |
 | sys                        |
 +----------------------------+
-6 rows in set (0.00 sec)
+5 rows in set (0.01 sec)
 //}
 
 それではMySQLを抜けてEC2のインスタンスに戻りたいので「exit」と入力してEnterキーを押してください。
@@ -372,6 +337,4 @@ mysql> exit
 Bye
 //}
 
-Byeと表示されたらMySQLとの接続を切ってEC2のインスタンスへ戻ってこられています。
-
-これでデータベースサーバは用意できました。いよいよWordPressのインストールを行いましょう。
+Byeと表示されたらMySQLとの接続を切ってEC2のインスタンスへ戻ってこられています。これでデータベースサーバは用意できました。いよいよWordPressのインストールを行いましょう。

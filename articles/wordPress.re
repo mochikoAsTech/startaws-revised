@@ -23,15 +23,15 @@ ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 $ curl -O https://wordpress.org/latest.tar.gz
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-100 8538k  100 8538k    0     0  3342k      0  0:00:02  0:00:02 --:--:-- 3342k
+100 14.7M  100 14.7M    0     0  5072k      0  0:00:02  0:00:02 --:--:-- 5071k
 //}
 
 ダウンロードしたファイルをlsコマンドで確認してみましょう。
 
 //cmd{
 $ ls -lh /home/ec2-user/
-合計 8.4M
--rw-rw-r-- 1 ec2-user ec2-user 8.4M  9月  5 21:08 latest.tar.gz
+合計 15M
+-rw-rw-r-- 1 ec2-user ec2-user 15M 12月 26 00:37 latest.tar.gz
 //}
 
 圧縮された最新版のWordPress（latest.tar.gz）をダウンロードできました。
@@ -40,15 +40,15 @@ $ ls -lh /home/ec2-user/
 
 実はWordPressのインストールと言っても、今ダウンロードした圧縮ファイルを展開してドキュメントルートに置き、後はブラウザでぽちぽちと進めていくだけなので簡単です。
 
-それでは圧縮・解凍ソフトのようなtarコマンドを使ってWordPressの圧縮ファイル（latest.tar.gz）を展開します。lsコマンドで確認すると、展開によってwordpressというディレクトリができていることがわかります。
+それでは圧縮・解凍ソフトのようなtarコマンドを使ってWordPressの圧縮ファイル（latest.tar.gz）を展開します。lsコマンドで確認すると、latest.tar.gzを展開したことによって、wordpressというディレクトリができていることがわかります。
 
 //cmd{
 $ tar -xzf /home/ec2-user/latest.tar.gz
 
 $ ls -lh /home/ec2-user/
-合計 8.4M
--rw-rw-r-- 1 ec2-user ec2-user 8.4M  9月  5 21:08 latest.tar.gz
-drwxr-xr-x 5 ec2-user ec2-user 4.0K  8月  3 05:39 wordpress
+合計 15M
+-rw-rw-r-- 1 ec2-user ec2-user  15M 12月 26 00:37 latest.tar.gz
+drwxr-xr-x 5 ec2-user ec2-user 4.0K 12月  9 07:13 wordpress
 //}
 
 展開できたらmvコマンド@<fn>{mv}を使ってwordpressディレクトリの中身をすべてドキュメントルートに移動させましょう。特にいちばん後ろのスラッシュは書き忘れないように注意してください。
@@ -59,58 +59,61 @@ drwxr-xr-x 5 ec2-user ec2-user 4.0K  8月  3 05:39 wordpress
 $ sudo mv /home/ec2-user/wordpress/* /var/www/start-aws-documentroot/
 //}
 
-今後、WordPressの管理画面から画像ファイルをアップしたりプラグイン@<fn>{plugin}をインストールしたりするためには、ドキュメントルート以下のファイルやディレクトリに対してapacheユーザが権限を持っていないといけません。chownコマンド@<fn>{chown}でドキュメントルート以下のオーナー（持ち主）をapacheユーザに変更しておきましょう。
+今後、WordPressの管理画面から画像ファイルをアップしたりプラグイン@<fn>{plugin}をインストールしたりするためには、ドキュメントルート以下のファイルやディレクトリに対して、ec2-userではなくapacheユーザが権限を持っておく必要があります。chownコマンド@<fn>{chown}でドキュメントルート以下のオーナー（持ち主）をapacheユーザに変更しておきましょう。
 
 //footnote[plugin][WordPressの拡張機能のこと。]
 //footnote[chown][chownはchange ownershipの略。]
 
 //cmd{
 $ sudo chown apache:apache -R /var/www/start-aws-documentroot
+//}
 
+chownコマンドを実行した後、lsコマンドで確認して次のように表示されていれば問題ありません。
+
+//cmd{
 $ ls -ld /var/www/start-aws-documentroot
-drwxr-xr-x 6 apache apache 4096  9月  5 22:04 /var/www/start-aws-documentroot
+drwxr-xr-x 5 apache apache 4096 12月 26 00:40 /var/www/start-aws-documentroot
 //}
 
 それから@<chapref>{apacheSetting}で動作確認用に作った「AWSをはじめよう」と書いてあるindex.htmlファイルは削除しておきましょう。
 
 //cmd{
-$ sudo rm -f chown /var/www/start-aws-documentroot/index.html
+$ sudo rm -f /var/www/start-aws-documentroot/index.html
 //}
 
 これでドキュメントルート以下にあるのは展開したWordPressのファイルだけになりました。
 
 //cmd{
 $ ls -lh /var/www/start-aws-documentroot/
-合計 196K
--rw-r--r--  1 apache apache  418  9月 25  2013 index.php
--rw-r--r--  1 apache apache  20K  1月  7  2018 license.txt
--rw-r--r--  1 apache apache 7.3K  3月 19 01:13 readme.html
-drwxr-xr-x  5 apache apache 4.0K  8月  3 05:39 wordpress
--rw-r--r--  1 apache apache 5.4K  5月  2 07:10 wp-activate.php
-drwxr-xr-x  9 apache apache 4.0K  8月  3 05:39 wp-admin
--rw-r--r--  1 apache apache  364 12月 19  2015 wp-blog-header.php
--rw-r--r--  1 apache apache 1.9K  5月  3 07:11 wp-comments-post.php
--rw-r--r--  1 apache apache 2.8K 12月 16  2015 wp-config-sample.php
-drwxr-xr-x  4 apache apache 4.0K  8月  3 05:39 wp-content
--rw-r--r--  1 apache apache 3.6K  8月 20  2017 wp-cron.php
-drwxr-xr-x 18 apache apache  12K  8月  3 05:39 wp-includes
--rw-r--r--  1 apache apache 2.4K 11月 21  2016 wp-links-opml.php
--rw-r--r--  1 apache apache 3.3K  8月 22  2017 wp-load.php
--rw-r--r--  1 apache apache  37K  7月 16 23:14 wp-login.php
--rw-r--r--  1 apache apache 7.9K  1月 11  2017 wp-mail.php
--rw-r--r--  1 apache apache  16K 10月  4  2017 wp-settings.php
--rw-r--r--  1 apache apache  30K  4月 30 08:10 wp-signup.php
--rw-r--r--  1 apache apache 4.6K 10月 24  2017 wp-trackback.php
--rw-r--r--  1 apache apache 3.0K  9月  1  2016 xmlrpc.php
+合計 212K
+-rw-r--r--  1 apache apache  405  2月  6  2020 index.php
+-rw-r--r--  1 apache apache  20K  2月 12  2020 license.txt
+-rw-r--r--  1 apache apache 7.2K  6月 26 22:58 readme.html
+-rw-r--r--  1 apache apache 7.0K  7月 29 02:20 wp-activate.php
+drwxr-xr-x  9 apache apache 4.0K 12月  9 07:13 wp-admin
+-rw-r--r--  1 apache apache  351  2月  6  2020 wp-blog-header.php
+-rw-r--r--  1 apache apache 2.3K 10月  9 06:15 wp-comments-post.php
+-rw-r--r--  1 apache apache 2.9K  2月  6  2020 wp-config-sample.php
+drwxr-xr-x  4 apache apache   52 12月  9 07:13 wp-content
+-rw-r--r--  1 apache apache 3.9K  7月 31 04:14 wp-cron.php
+drwxr-xr-x 25 apache apache 8.0K 12月  9 07:13 wp-includes
+-rw-r--r--  1 apache apache 2.5K  2月  6  2020 wp-links-opml.php
+-rw-r--r--  1 apache apache 3.3K  2月  6  2020 wp-load.php
+-rw-r--r--  1 apache apache  49K 11月  9 19:53 wp-login.php
+-rw-r--r--  1 apache apache 8.4K  4月 14  2020 wp-mail.php
+-rw-r--r--  1 apache apache  21K 11月 12 23:43 wp-settings.php
+-rw-r--r--  1 apache apache  31K 10月  1 06:54 wp-signup.php
+-rw-r--r--  1 apache apache 4.7K 10月  9 06:15 wp-trackback.php
+-rw-r--r--  1 apache apache 3.2K  6月  9  2020 xmlrpc.php
 //}
 
 === サイトにアクセスしてインストール実行
 
 それではブラウザで@<href>{http://www.自分のドメイン名/}を開いてください。筆者なら自分のドメイン名は「startdns.fun」なので@<href>{http://www.startdns.fun/}を開きます。
 
-するとWordPressの言語選択画面（@<img>{startaws112}）が表示されるので「日本語」を選択して「続ける」をクリックします。
+するとWordPressの言語選択画面（@<img>{startaws112}）が表示されるので「日本語」を選択して「次へ」をクリックします。
 
-//image[startaws112][「日本語」を選択して「続ける」をクリック][scale=0.8]{
+//image[startaws112][「日本語」を選択して「次へ」をクリック][scale=0.8]{
 //}
 
 続いて「WordPressへようこそ。」という画面（@<img>{startaws113}）が表示されたら「さあ、始めましょう！」をクリックします。
@@ -121,18 +124,18 @@ drwxr-xr-x 18 apache apache  12K  8月  3 05:39 wp-includes
 データベースの接続情報を入力する画面（@<img>{startaws114}）が表示されたら、@<chapref>{database}で設定した内容を思い出しながら次のように入力します。（@<table>{dbAuth}）テーブル接頭辞は変更せずそのままで構いません。
 
 //table[dbAuth][データベースの接続情報]{
-データベース名	start_aws_wordpress_dbname（データベースの名前）
-ユーザー名	start_aws_dbuser（マスターユーザの名前）
+データベース名	start_aws_wordpress_dbname（最初のデータベース名）
+ユーザー名	start_aws_dbuser（マスターユーザ名）
 パスワード	start_aws_db_password（マスターパスワード）
-データベースのホスト名	エンドポイント
+データベースのホスト名	RDSのエンドポイント
 //}
 
-エンドポイントは「start-aws-db-instance.cyjoha27mqmm.ap-northeast-1.rds.amazonaws.com」のような長いドメイン名です。パソコンのメモ帳にメモしてあると思いますので、そこからコピーペーストしましょう。すべて入力したら「送信」をクリックします。
+RDSのエンドポイントは「start-aws-db-instance.cesouf5kakle.ap-northeast-1.rds.amazonaws.com」のような長いドメイン名です。パソコンのメモ帳にメモしてあると思いますので、そこからコピーペーストしましょう。すべて入力したら「送信」をクリックします。
 
 //image[startaws114][データベースの接続情報を入力して「送信」をクリック][scale=0.8]{
 //}
 
-データベースの接続情報に誤りがなく、WordPressがデータベースと繋がったら「この部分のインストールは無事完了しました。WordPress は現在データベースと通信できる状態にあります。」と表示（@<img>{startaws115}）されます。「インストール実行」をクリックしましょう。
+データベースの接続情報に誤りがなく、WordPressがデータベースと繋がったら「この部分のインストールは無事完了しました。WordPress は現在データベースと通信できる状態にあります。準備ができているなら…」と表示（@<img>{startaws115}）されます。「インストール実行」をクリックしましょう。
 
 //image[startaws115][「インストール実行」をクリック][scale=0.8]{
 //}
@@ -166,24 +169,26 @@ WordPressの管理画面に入るため、先ほど設定したユーザー名�
 //image[startaws119][「更新」に赤いマークがついていたら「更新」をクリック][scale=0.8]{
 //}
 
-「WordPress の新しいバージョンがあります。」と表示されていますので「今すぐ更新」をクリック（@<img>{startaws120}）します。@<fn>{security}
+WordPress本体やプラグイン、テーマなどで新しいバージョンが出ていたら、きちんと更新（@<img>{startaws120}）しておきましょう。@<fn>{security}
 
-//footnote[security][WordPressでは定期的に脆弱性が発見されて対策済みのバージョンが公開されます。脆弱性（ぜいじゃくせい）というのは悪用が可能なバグや設定不備のことです。もしWordPressに脆弱性が見つかって対策済みの新しいバージョンのWordPressが公開されたとしても、あなたが更新をしないとウェブサイトは脆弱性がある危険な状態のままで放置されていることになります。古いバージョンのWordPressを使っているとサイトを改ざんしてウイルスをばらまかれたりデータベースの個人情報を盗まれたりする可能性もありますので、新しいバージョンが出たらきちんと更新しましょう。]
+//footnote[security][WordPressでは定期的に脆弱性が発見され、対策済みのバージョンが公開されます。脆弱性（ぜいじゃくせい）というのは悪用が可能なバグや設定不備のことです。もしWordPressに脆弱性が見つかって対策済みの新しいバージョンのWordPressが公開されたとしても、あなたが更新をしないとウェブサイトは脆弱性がある危険な状態のままで放置されていることになります。古いバージョンのWordPressを使っていると、サイトを改ざんしてウイルスをばらまかれたり、データベースの個人情報を盗まれたりする可能性もありますので、新しいバージョンが出たらきちんと更新しましょう。]
 
-//image[startaws120][「今すぐ更新」をクリック][scale=0.8]{
+//image[startaws120][新しいバージョンが出ていたら更新しよう][scale=0.8]{
 //}
 
-「今すぐ更新」をクリックすると更新の進捗が表示（@<img>{startaws121}）され、更新完了すると新しいバージョンではどんな修正がされたのか？が表示されます。それではできあがったおしゃれなサイトを見てみましょう。左上の家のマークをクリック（@<img>{startaws122}）してください。
+更新すると進捗が表示されます。「すべての更新が完了しました。」と表示（@<img>{startaws121}）されたら、できあがったサイトを見てみましょう。左上の家のマークをクリックしてください。
 
-//image[startaws121][更新の進捗が表示される][scale=0.8]{
+//image[startaws121][更新完了したら家のマークをクリック][scale=0.8]{
 //}
 
-//image[startaws122][更新完了したら家のマークをクリック][scale=0.8]{
+そしてこちらが完成したWordPressのおしゃれなサイトです！（@<img>{startaws122}）ここからは見た目をカスタマイズするもよし、技術的なことを調べたブログ記事を日々綴っていくもよし、自分のサイトを自由に楽しんでください。
+
+//image[startaws122][できあがった「自分のサイト」をここからは自由にカスタマイズしよう][scale=0.8]{
 //}
 
-そしてこちらが完成したWordPressのおしゃれなサイトです！（@<img>{startaws123}）ここからは見た目をカスタマイズするもよし、技術的なことを調べたブログ記事を日々綴っていくもよし、自分のサイトを自由に楽しんでください。
+たとえばテーマを「Twenty Twenty-One」から「Twenty Seventeen」に変えただけで、こんなにがらっと見た目（@<img>{startaws123}）が変わります。
 
-//image[startaws123][できあがった「自分のサイト」をここからは自由にカスタマイズしよう][scale=0.8]{
+//image[startaws123][テーマを変えると見た目もがらっと変わる][scale=0.8]{
 //}
 
 === 【ドリル】WordPressからのメールが迷惑メール扱いされてしまう
@@ -197,28 +202,26 @@ WordPressの管理画面に入るため、先ほど設定したユーザー名�
 
 原因は「SPFが設定されていないこと」のようです。送信元のメールアドレスは「WordPress <wordpress@startdns.fun>」でした。このとき次のどれを設定すれば迷惑メール扱いされなくなるでしょうか？
 
- * A. startdns.funのTXTレコードに「"v=spf1 ip4:xxx.xxx.xxx.xxx ~all"」のようにElastic IPのアドレスを設定する
- * B. www.startdns.funのTXTレコードに「"v=spf1 ip4:xxx.xxx.xxx.xxx ~all"」のようにElastic IPのアドレスを設定する
- * C. startdns.funのTXTレコードに「"v=spf1 a:login.startdns.fun ~all"」のようにSSHログインで使っているドメイン名を設定する
+ * A. startdns.funのTXTレコードに「v=spf1 ip4:xxx.xxx.xxx.xxx ~all」のようにElastic IPのアドレスを設定する
+ * B. www.startdns.funのTXTレコードに「v=spf1 ip4:xxx.xxx.xxx.xxx ~all」のようにElastic IPのアドレスを設定する
+ * C. startdns.funのTXTレコードに「v=spf1 a:login.startdns.fun ~all」のようにSSHログインで使っているドメイン名を設定する
 
 //raw[|latex|\begin{reviewimage}\begin{flushright}\includegraphics[width=0.5\maxwidth\]{./images/answerColumnShort.png}\end{flushright}\end{reviewimage}]
 
 ==== 解答
 
-正解はAまたはCです。SPFレコードを設定すべきなのは送信元のメールアドレスで使われているドメイン名です。EC2のインスタンスからメールが送信されるとき送信元のIPアドレスはElastic IPとなります。Aのように直接Elastic IPのIPアドレスを指定してもいいですし、CのようにElastic IPと紐づいているドメイン名を指定しても構いません。
+正解はAまたはCです。SPFレコードを設定すべきなのは、サイトのドメイン名ではなく、送信元のメールアドレスで使われているドメイン名です。EC2のインスタンスからメールが送信されるとき送信元のIPアドレスはElastic IPとなります。Aのように直接Elastic IPのIPアドレスを指定してもいいですし、CのようにElastic IPと紐づいているドメイン名を指定しても構いません。
 
-CのようにしておくとElastic IPが変更になったときに「login.startdns.fun」のAレコードだけを変更すればいいため変更箇所が少なくて済みます。
+CのようにしておくとElastic IPが変更になったときに「login.startdns.fun」のAレコードだけを変更すればいいため、変更箇所が少なくて済みます。
 
 //image[startaws207][筆者はCの方法でSPFレコードを設定しました][scale=0.8]{
 //}
 
 === 管理画面にダイジェスト認証をかけよう
 
-ところでWordPressは利用者が多いため、その管理画面を乗っ取ろうと狙ってくる攻撃も多いです。「こんな作ったばかりの小さなブログに攻撃なんか来ないのでは？」と思われるかもしれませんが、攻撃者はIPアドレスを端から順番に試していくだけなので、サイトの開設時期や規模にかかわらずどんなサーバでも攻撃はされると思って間違いありません。
+ところでWordPressは利用者が多いため、その管理画面を乗っ取ろうと狙ってくる攻撃も多いです。「こんな作ったばかりの小さなブログに攻撃なんか来ないのでは？」と思われるかもしれませんが、攻撃者はIPアドレスを端から順番に試していくだけなので、サイトの開設時期や規模にかかわらず、どんなサーバでも攻撃はされると思って間違いありません。
 
-管理画面にログインするにはユーザー名とパスワードの認証が必要ですが、安全のためその手前にもうひとつ「ダイジェスト認証」という認証をかけておきましょう。
-
-EC2のインスタンスでコマンドを叩きますのでRLoginやターミナルに戻ってrootになってください。
+管理画面にログインするにはユーザー名とパスワードの認証が必要ですが、安全のためその手前にもうひとつ「ダイジェスト認証」という認証をかけておきましょう。EC2のインスタンスでコマンドを叩きますのでRLoginやターミナルに戻ってrootになってください。
 
 //cmd{
 $ sudo su -
