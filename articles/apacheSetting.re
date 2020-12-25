@@ -18,31 +18,33 @@ Apacheでバーチャルホストを作ってブラウザでページを表示�
 
 === セキュリティグループで80番ポートの穴あけをしよう
 
-ウェルカムページが見られるように、セキュリティグループで「HTTP（ポート番号80番）」の穴あけをしましょう。マネジメントコンソールの左上にある「サービス」から、「コンピューティング」の下にある「EC2」（@<img>{startaws58}）をクリックしてください。
+ウェルカムページが見られるように、セキュリティグループで「HTTP（ポート番号80番）」の穴あけをしましょう。マネジメントコンソール@<fn>{consoleUrl}の左上にある「サービス」から、「コンピューティング」の下にある「EC2」（@<img>{startaws58}）をクリックしてください。
+
+//footnote[consoleUrl][@<href>{https://console.aws.amazon.com/}]
 
 //image[startaws58][サービス＞コンピューティング＞EC2][scale=0.8]{
 //}
 
 「EC2」をクリックすると、EC2ダッシュボード（@<img>{startaws59}）が表示されます。左メニューの「セキュリティグループ」をクリックしてください。
 
-//image[startaws59][現状はSSH（ポート番号22番）しか通れないので「インバウンド」タブの「編集」をクリック][scale=0.8]{
+//image[startaws59][現状はSSH（ポート番号22番）しか通れないので「インバウンドルール」タブの「インバウンドルールを編集」をクリック][scale=0.8]{
 //}
 
-「ec2-security-group」をクリックして「インバウンド」タブを見ると、現状は通信を許可する対象に「SSH（ポート番号22番）」しか含まれていません。「インバウンド」タブの「編集」をクリックします。
+「ec2-security-group」をクリックして「インバウンドルール」タブを見ると、現状は通信を許可する対象に「SSH（ポート番号22番）」しか含まれていません。「インバウンドルール」タブの「インバウンドルールを編集」をクリックします。
 
-「ルールの追加」をクリックしたらタイプは「HTTP」を選択（@<img>{startaws60}）します。ソースが「カスタム」になり「0.0.0.0/0, ::/0」と自動入力されるので、カンマから後ろを消して「0.0.0.0/0」にしてください。入力できたら「保存」をクリックします。
+「ルールを追加」をクリックしたらタイプは「HTTP」を選択（@<img>{startaws60}）します。ソースのプルダウンは「カスタム」のままで、「0.0.0.0/0」を選択してください。入力できたら「ルールを保存」をクリックします。
 
-//image[startaws60][タイプは「HTTP」、ソースは「0.0.0.0/0」にして「保存」をクリック][scale=0.8]{
+//image[startaws60][タイプは「HTTP」、ソースは「0.0.0.0/0」にして「ルールを保存」をクリック][scale=0.8]{
 //}
 
-「インバウンド」タブでHTTPが追加（@<img>{startaws61}）されていたら穴あけ作業は完了です。
+「インバウンドセキュリティグループのルールが、セキュリティグループで正常に変更されました」と表示され、「インバウンドルール」タブでHTTPが追加（@<img>{startaws61}）されていたら穴あけ作業は完了です。
 
-//image[startaws61][「インバウンド」タブでHTTPが追加されていたら穴あけ完了][scale=0.8]{
+//image[startaws61][「インバウンドルール」タブでHTTPが追加されていたら穴あけ完了][scale=0.8]{
 //}
 
-もう一度ブラウザで「@<href>{http://login.自分のドメイン名/}」を開いてみましょう。「Amazon Linux AMI Test Page」と書かれたウェルカムページが表示（@<img>{startaws62}）されるはずです。
+もう一度ブラウザで「@<href>{http://login.自分のドメイン名/}」を開いてみましょう。「Test Page」と書かれたウェルカムページが表示（@<img>{startaws62}）されるはずです。
 
-//image[startaws62][Amazon Linux AMI Test Pageが表示された][scale=0.8]{
+//image[startaws62][ApacheのTest Pageが表示された][scale=0.8]{
 //}
 
 == 自分のサイト用にバーチャルホストを作ろう
@@ -53,14 +55,12 @@ Apacheでバーチャルホストを作ってブラウザでページを表示�
 
 「バーチャルホスト」という言葉を聞いたことはありますか？
 
-バーチャルホストというのは@<ttb>{1台のサーバ上で2つ以上のウェブサイトを扱う運用方法のこと}です。
+バーチャルホストというのは@<ttb>{1台のサーバ上で2つ以上のウェブサイトを扱う運用方法のこと}です。たとえば筆者の趣味が「スイーツブッフェめぐり」と「読書」だったとして、次のような2つのバーチャルホストを作ってやれば、1台のウェブサーバ上で2つのサイト同時に公開できます。
 
-たとえば筆者の趣味が「スイーツブッフェめぐり」と「読書」だったとして、1台のウェブサーバで
+ * sweets.startdns.fun（スイーツブッフェめぐりのサイト）
+ * book.startdns.fun（読んだ本を紹介するサイト）
 
- * sweets.startdns.fun
- * book.startdns.fun
-
-という2つのバーチャルホストを作ってやれば、同じサーバ上で別々のサイトを運用できます。マンションの建物（ホストサーバ）の中に101号室や102号室などの各戸（仮想サーバ）があり、その中にはそれぞれ子供部屋や書斎や居間などの部屋（ウェブサイト）があって、その部屋を訪れるお客さんたち（サイトを見る人）がいる、と例えると分かりやすいでしょうか。
+マンションの建物（ホストサーバ）の中に101号室や102号室などの各戸（仮想サーバ）があり、その中にはそれぞれ子供部屋や書斎や居間などの部屋（ウェブサイト）があって、その部屋を訪れるお客さんたち（サイトを見る人）がいる、と例えると分かりやすいでしょうか。
 
 これからApacheで自分のサイト用にこのバーチャルホストを作ってみます。
 
@@ -68,7 +68,7 @@ Apacheでバーチャルホストを作ってブラウザでページを表示�
 
 それでは早速、自分のドメイン名（筆者ならstartdns.fun）のサイト用にバーチャルホストを作ってみましょう。@<fn>{subDomain}
 
-//footnote[subDomain][サーバ1台にウェブサイト1つだけであればバーチャルホストにする必要はあまりないのですが、バーチャルホストの作り方を覚えておけば後で「サブドメイン名で別のサイトを作ってみよう」と思ったときに役立つはずです。]
+//footnote[subDomain][サーバ1台にウェブサイト1つだけであればバーチャルホストにする必要はあまりないのですが、バーチャルホストの作り方を覚えておけば、今後「サブドメイン名で別のサイトを作ってみよう」と思ったときに役立つはずです。]
 
 Windowsの方はRLoginを起動して「start-aws-instance」に接続してください。Macの方はターミナルで次のコマンドを実行してください。
 
@@ -78,14 +78,14 @@ ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 
 「Amazon Linux 2 AMI」と表示されたら「sudo su -」@<fn>{sudoSu}でrootになりましょう。（@<img>{startaws63}）
 
-//footnote[sudoSu][sudoは「他のユーザとしてコマンドを実行する」ためのコマンドで、 suは「他のユーザになる」ためのコマンドです。「他のユーザ＝root」の場合はユーザ名を書かなくてもいいので省略していますが、省略せずに書くと「sudo -u root su - root」（rootとして「rootになる」というコマンドを実行する）ということです。ちなみに勘違いされることが多いですがsuは「Super User」ではなく「Substitute User（ユーザーを代用する）」の略です。]
-
 //cmd{
 $ sudo su -
 //}
 
 //image[startaws63][Amazon Linux 2 AMIと表示されたらrootになろう][scale=0.8]{
 //}
+
+//footnote[sudoSu][sudoは「他のユーザとしてコマンドを実行する」ためのコマンドで、 suは「他のユーザになる」ためのコマンドです。「他のユーザ＝root」の場合はユーザ名を書かなくてもいいので省略していますが、省略せずに書くと「sudo -u root su - root」（rootとして「rootになる」というコマンドを実行する）ということです。ちなみに勘違いされることが多いですがsuは「Super User」ではなく「Substitute User（ユーザーを代用する）」の略です。]
 
 Apacheの大本となる設定ファイルは「/etc/httpd/conf/httpd.conf」です。350行以上あるのでtailコマンドを使って最後の5行だけ確認してみましょう。
 
@@ -96,13 +96,13 @@ Apacheの大本となる設定ファイルは「/etc/httpd/conf/httpd.conf」で
 //image[startaws143][tailコマンドでhttpd.confの最後の5行を見てみよう][scale=0.8]{
 //}
 
-すると最後の行に
+すると最後の行に、次のように書かれているため、大本の設定ファイル（httpd.conf）の中で、さらに「conf.d」というディレクトリ内の「*.conf」というファイルをインクルード（取り込み）@<fn>{includeOptional}していることが分かります。
 
 //cmd{
 IncludeOptional conf.d/*.conf
 //}
 
-とあるため大本の設定ファイルの中で、さらに「conf.d」というディレクトリ内の「*.conf」というファイルをインクルード（取り込み）@<fn>{includeOptional}していることが分かります。でもいきなり「conf.d/*.conf」と書かれても「3丁目」とだけ書かれた住所のようなもので、どこの「conf.d/*.conf」を指しているのかよく分かりませんよね。「conf.d」より上のディレクトリはどこで指定しているのか、grepという検索のコマンドで探してみましょう。
+でもいきなり「conf.d/*.conf」と書かれても「3丁目」とだけ書かれた住所のようなもので、どこの「conf.d/*.conf」を指しているのかよく分かりませんよね。「conf.d」より上のディレクトリはどこで指定しているのか、grepという検索のコマンドで探してみましょう。
 
 //footnote[includeOptional][IncludeディレクティブやIncludeOptionalディレクティブについては@<href>{https://httpd.apache.org/docs/2.4/ja/mod/core.html#include}を参照。]
 
@@ -131,7 +131,7 @@ ServerRoot@<fn>{serverRoot}ではベースとなるディレクトリを指定�
 //image[startaws65][i（アイ）を押すと「-- INSERT --」と表示される「編集モード」になった][scale=0.8]{
 //}
 
-「編集モード」になったら次のようにバーチャルホストの設定を書いていってください。「自分のドメイン名」のところはそのまま日本語で書かず、自分のドメイン名に置き換えてください。
+「編集モード」になったら次のようにバーチャルホストの設定を書いていってください。@<ttb>{「自分のドメイン名」のところはそのまま日本語で書かず、自分のドメイン名に置き換えてください}。
 
 //cmd{
 <VirtualHost *:80>
@@ -157,34 +157,26 @@ ServerRoot@<fn>{serverRoot}ではベースとなるディレクトリを指定�
 //image[startaws67][「閲覧モード」に戻ったら「:wq」と入力してEnterキーを押せば保存される][scale=0.8]{
 //}
 
-では確認のため、次のコマンドを叩いてみてください。
+では確認のため、次のコマンドを叩いてみてください。（@<img>{startaws67-2}）
 
 //cmd{
 # cat /etc/httpd/conf.d/start-aws-virtualhost.conf
-<VirtualHost *:80>
-    DocumentRoot "/var/www/start-aws-documentroot"
-    ServerName www.startdns.fun
-
-    ErrorLog "logs/start-aws-error.log"
-    CustomLog "logs/start-aws-access.log" combined
-
-    <Directory "/var/www/start-aws-documentroot">
-        AllowOverride All
-    </Directory>
-</VirtualHost>
 //}
 
-「ServerName」のところが日本語の「www.自分のドメイン名」ではなく、ちゃんと自分のドメイン名に置き換わっているか確認してください。たとえば筆者なら「startdns.fun」というドメイン名なので次のようになっています。
+//image[startaws67-2][catコマンドでstart-aws-virtualhost.confの中身を確認しよう][scale=0.8]{
+//}
+
+特に「ServerName」のところが日本語の「www.自分のドメイン名」ではなく、ちゃんと自分のドメイン名に置き換わっているか、を確認してください。たとえば筆者なら「startdns.fun」というドメイン名なので次のようになっています。
 
 //cmd{
 ServerName www.startdns.fun
 //}
 
-もしcatコマンドを叩いたときに「そのようなファイルやディレクトリはありません」と表示されたら設定ファイルが作成できていません。作り直しましょう。
+もしcatコマンドを叩いたときに「そのようなファイルやディレクトリはありません」と表示されたら、設定ファイル（start-aws-virtualhost.conf）が作成できていません。作り直しましょう。
 
 === 設定ファイルの構文チェック
 
-バーチャルホストの設定ファイルが書けたのでapachectlで構文チェックをしてみましょう。apachectlはApacheを操作するためのコントローラのようなもので、引数にconfigtestとつけてやると設定ファイルの構文チェックができます。
+バーチャルホストの設定ファイルが書けたのでapachectlコマンドで構文チェックをしてみましょう。apachectlは、名前のとおりApacheを操作するためのコントローラのようなもので、引数にconfigtestとつけてやると設定ファイルの構文チェックができます。
 
 //cmd{
 # apachectl configtest
@@ -192,11 +184,11 @@ AH00112: Warning: DocumentRoot [/var/www/start-aws-documentroot] does not exist
 Syntax OK
 //}
 
-早速警告のメッセージが表示されています。落ち着いて読んでみましょう。「DocumentRoot [/var/www/start-aws-documentroot] does not exist」と書いてあります。これは「ドキュメントルートに[/var/www/start-aws-documentroot]というディレクトリを指定しているけどそんなディレクトリ存在しないよ」と言っているのです。
+早速、警告のメッセージが表示されています。落ち着いて読んでみましょう。「@<ttb>{DocumentRoot [/var/www/start-aws-documentroot] does not exist}」と書いてあります。これは「@<ttb>{ドキュメントルートに[/var/www/start-aws-documentroot]というディレクトリを指定しているけど、そんなディレクトリは存在しないよ}」と言われているのです。
 
 === ドキュメントルートを作成
 
-ドキュメントルート@<fn>{docRoot}とは「サイトにアクセスしたらここに置いたファイルが表示されるよ」というディレクトリのことです。つまりバーチャルホストの設定で
+ドキュメントルート@<fn>{docRoot}とは「@<ttb>{サイトにアクセスしたらここに置いたファイルが表示されるよ}」というディレクトリのことです。つまりバーチャルホストの設定で
 
 //footnote[docRoot][@<href>{https://httpd.apache.org/docs/2.4/ja/mod/core.html#documentroot}]
 
@@ -213,7 +205,7 @@ ServerName www.startdns.fun
 
 に置いた「index.html」が@<href>{http://www.startdns.fun/index.html} で見られるということです。
 
-先ほどバーチャルホストの設定で次のように書いたのですが、このディレクトリがまだ存在していないため警告が出てしまっているようです。ですのでこのディレクトリを作成しましょう。
+先ほどバーチャルホストの設定で次のように書いたのですが、この「/var/www/start-aws-documentroot」というディレクトリがまだ存在していないため、警告が出てしまっているようです。ですのでこのディレクトリを作成しましょう。
 
 //cmd{
 DocumentRoot "/var/www/start-aws-documentroot"
@@ -227,16 +219,13 @@ DocumentRoot "/var/www/start-aws-documentroot"
 # mkdir /var/www/start-aws-documentroot
 
 # ls -l /var/www/
-合計 24
-drwxr-xr-x 2 root root 4096  8月 18 07:22 cgi-bin
-drwxr-xr-x 3 root root 4096  9月  1 17:43 error
-drwxr-xr-x 2 root root 4096  8月 18 07:22 html
-drwxr-xr-x 3 root root 4096  9月  1 17:43 icons
-drwxr-xr-x 2 root root 4096  9月  1 17:43 noindex
-drwxr-xr-x 2 root root 4096  9月  4 12:53 start-aws-documentroot
+合計 0
+drwxr-xr-x 2 root root 6  8月 25 03:55 cgi-bin
+drwxr-xr-x 2 root root 6  8月 25 03:55 html
+drwxr-xr-x 2 root root 6 12月 25 13:49 start-aws-documentroot
 //}
 
-これでドキュメントルートができました。再びapachectlで構文チェックをしてみましょう。今度は「Syntax OK」とだけ表示されるはずです。
+これでドキュメントルートができました。再びapachectlコマンドで構文チェックをしてみましょう。今度は「Syntax OK」とだけ表示されるはずです。
 
 //cmd{
 # apachectl configtest
@@ -261,24 +250,24 @@ i（アイ）を押して「編集モード」に変わったら「AWSをはじ�
 //image[startaws69][ESCを押して「閲覧モード」に戻ったら「:wq」で保存][scale=0.8]{
 //}
 
-それではバーチャルホストの設定を有効にするため、apachectlでApacheを再起動しましょう。
+それではバーチャルホストの設定を有効にするため、apachectlコマンドでApacheを再起動しましょう。
 
 //cmd{
 # apachectl restart
 //}
 
-何のメッセージも表示されなければ問題なくApacheが再起動できています。
+何のメッセージも表示されなければ、問題なくApacheが再起動できています。
 
 === curlでページを確認しよう
 
-これでバーチャルホストの設定は完了です。ウェブサーバに「自分のウェブサイトのページ見せて」と頼んだら、ちゃんとウェブページを返してくれるのか確認してみましょう。次のようなコマンドを叩いてみてください。「www.自分のドメイン名」の部分は自分のドメイン名に置き換えます。たとえば筆者なら「startdns.fun」というドメイン名なので「www.startdns.fun」にします。
+これでバーチャルホストの設定は完了です。ウェブサーバに「自分のウェブサイトのページ見せて」と頼んだら、ちゃんとウェブページを返してくれるのか確認してみましょう。次のようなcurlコマンドを叩いてみてください。@<ttb>{「www.自分のドメイン名」の部分は自分のドメイン名に置き換えます}。たとえば筆者なら「startdns.fun」というドメイン名なので「www.startdns.fun」にします。
 
 //cmd{
 # curl -H "Host:www.自分のドメイン名" http://localhost/index.html
 AWSをはじめよう
 //}
 
-これはcurl（カール）という「ターミナルにおけるブラウザ」のようなコマンドを使って、localhost（自分自身）の「www.自分のドメイン名」というホストに対して「ページ見せて」というリクエストを投げています。ちゃんと自分のバーチャルホストが応答して、ドキュメントルートにあるindex.htmlの「AWSをはじめよう」が表示されましたね。
+これはcurl（カール）という「ターミナルにおけるブラウザ」のようなコマンドを使って、localhost（自分自身）の「www.自分のドメイン名」というホストに対して「ページを見せて」というリクエストを投げています。ちゃんと自分のバーチャルホストが応答して、ドキュメントルートにあるindex.htmlの「AWSをはじめよう」が表示されましたね。おめでとうございます！
 
 == Route53で自分のサイトのドメイン名を設定しよう
 
@@ -287,13 +276,13 @@ AWSをはじめよう
 //image[startaws70][ブラウザで「www.自分のドメイン名」を開いたらエラーになってしまった][scale=0.8]{
 //}
 
-これはまだ「www.自分のドメイン名」というドメイン名とサーバのIPアドレスをつなぐAレコードが存在していないからです。Route53でAレコードを作りましょう。
+これはまだ「www.自分のドメイン名」というドメイン名と、ウェブサーバのIPアドレスをつなぐAレコードが存在していないからです。Route53でAレコードを作りましょう。
 
 === 自分のサイトのドメイン名を作ろう
 
-マネジメントコンソールの左上にある「サービス」から、「ネットワーキング＆コンテンツ配信」の下にある「Route53」（@<img>{startaws71}）をクリックしてください。
+マネジメントコンソールの左上にある「サービス」から、「ネットワーキングとコンテンツ配信」の下にある「Route53」（@<img>{startaws71}）をクリックしてください。
 
-//image[startaws71][サービス＞ネットワーキング＆コンテンツ配信＞Route53][scale=0.8]{
+//image[startaws71][サービス＞ネットワーキングとコンテンツ配信＞Route53][scale=0.8]{
 //}
 
 Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」をクリック（@<img>{startaws72}）します。
@@ -306,17 +295,19 @@ Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」�
 //image[startaws73][自分のドメイン名をクリック][scale=0.8]{
 //}
 
-「レコードを作成」をクリック（@<img>{startaws74}）してください。すると右側にリソースレコードの情報を入力するフォームが出てきます。
+「レコードを作成」をクリック（@<img>{startaws74}）してください。
 
 //image[startaws74][「レコードを作成」をクリック][scale=0.8]{
 //}
 
-レコード名には「www」、値にはElastic IPを入力（@<img>{startaws75}）します。Elastic IPは左側の「login.自分のドメイン名」のところにも書いてあるので、それをコピーしてきても構いません。入力できたら「レコードを作成」をクリックします。
+「レコードのクイック作成」が表示されたら、レコード名には「www」、値にはElastic IPを入力（@<img>{startaws75}）@<fn>{elasticIpIs}してください。それ以外の箇所は何も変更せずそのままで構いません。入力できたら「レコードを作成」をクリックします。
 
-//image[startaws75][レコード名には「www」、値にはloginと同じElastic IPを入力][scale=0.8]{
+//footnote[elasticIpIs][Elastic IPはメモしてあると思いますが、もしぱっと出てこなかったら、1つ前の画面の「login.自分のドメイン名」のところにも書いてあるのでそれを見ても構いません。]
+
+//image[startaws75][レコード名には「www」、値にはElastic IPを入力して「レコードを作成」][scale=0.8]{
 //}
 
-これで「www.自分のドメイン名」（@<img>{startaws76}）というAレコードが作成できました。
+「startdns.fun のレコードが正常に作成されました。」と表示されます。これで「www.自分のドメイン名」（@<img>{startaws76}）というAレコードが作成できました。
 
 //image[startaws76][「www.自分のドメイン名」というAレコードができた][scale=0.8]{
 //}
@@ -342,11 +333,13 @@ Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」�
     DirectoryIndex index.html
 //}
 
-DirectoryIndexディレクティブではファイル名を省略して「/（スラッシュ）」で終わるURLを開いたときに返すファイルの名前を指定できます。次のように複数指定した場合は「index.html」「index.php」「index.txt」の順に探して、最初に見つかったものを返します。
+DirectoryIndexディレクティブ@<fn>{directoryIndex}ではファイル名を省略して「/（スラッシュ）」で終わるURLを開いたときに返すファイルの名前を指定できます。次のように複数指定した場合は「index.html」「index.php」「index.txt」の順に探して、最初に見つかったものを返します。
 
 //cmd{
 DirectoryIndex index.html index.php index.txt
 //}
+
+//footnote[directoryIndex][@<href>{https://httpd.apache.org/docs/2.4/ja/mod/mod_dir.html#directoryindex}]
 
 === ブラウザでページを見てみよう
 
@@ -360,22 +353,20 @@ Aレコードの追加が終わったら再びブラウザで「@<href>{http://w
 ブラウザ上ではサイトが表示されましたが、サーバ側でもアクセスログを確認してみましょう。
 
 //cmd{
-# tailf /etc/httpd/logs/start-aws-access.log
+# tail -f /etc/httpd/logs/start-aws-access.log
 //}
 
-tailfコマンド@<fn>{tailf}はファイルの追記を監視できるコマンドなので、今来ているアクセスのログをタイムリーに確認できます。何回かEnterキーを叩いて改行したら、この状態でブラウザの更新ボタンをクリックしてみましょう。自分がいまブラウザでアクセスしたログが次々と表示されると思います。（@<img>{startaws78}）tailfコマンドはCtrl+cで抜けるまでずっとログの追記が表示され続けます。
+tailコマンドに-fオプションを付けると、ファイルの追記を監視できるので、今来ているアクセスのログをタイムリーに確認できます。何回かEnterキーを叩いて改行したら、この状態でブラウザの再読込ボタンをクリックしてみましょう。ブラウザでページを再読込するたびに、そのアクセスログがターミナルで表示されると思います。（@<img>{startaws78}）tailコマンドに-fオプションを付けた場合、Ctrl+cで抜けるまでずっとログの追記が表示され続けます。
 
-//footnote[tailf][tailコマンドに-fオプションをつけてもまったく同じ動作をします。]
-
-//image[startaws78][tailfでログを確認しながらブラウザでサイトの表示を更新してみよう][scale=0.8]{
+//image[startaws78][tail -fでログを確認しながらブラウザでサイトの表示を更新してみよう][scale=0.8]{
 //}
 
-念のためエラーログも確認してみましょう。アクセスログ（1.6K）に対してエラーログはファイルサイズが0です。エラーログは1行も出ていないようですので問題ありません。
+念のためエラーログも確認してみましょう。アクセスログ（2.9K）に対してエラーログはファイルサイズが0です。エラーログは1行も出ていないようですので問題ありません。
 
 //cmd{
 # ls -lh /etc/httpd/logs/start-aws-*
--rw-r--r-- 1 root root 1.6K  9月  4 13:51 /etc/httpd/logs/start-aws-access.log
--rw-r--r-- 1 root root    0  9月  4 13:07 /etc/httpd/logs/start-aws-error.log
+-rw-r--r-- 1 root root 2.9K 12月 25 15:06 /etc/httpd/logs/start-aws-access.log
+-rw-r--r-- 1 root root    0 12月 25 14:54 /etc/httpd/logs/start-aws-error.log
 //}
 
 たとえばサイトが上手く表示されないとき、アクセスログやエラーログを確認すれば「サーバまでたどり着いていない」のか「サーバにはたどり着いているけれど、ドキュメントルートに置いたPHPファイルのエラーでちゃんとページが出ない」のか、といった問題の切り分けができます。上手くいかないときはログを見るようにしましょう。

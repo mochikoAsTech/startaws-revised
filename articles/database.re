@@ -254,9 +254,9 @@ DBパラメータグループ	start-aws-parameter-group
 //image[startaws105][セキュリティグループの「rds-launch-wizard」をクリック][scale=0.8]{
 //}
 
-「rds-launch-wizard」の「インバウンド」タブで「編集」をクリック（@<img>{startaws106}）します。
+「rds-launch-wizard」の「インバウンドルール」タブで「編集」をクリック（@<img>{startaws106}）します。
 
-//image[startaws106][「インバウンド」タブで「編集」をクリック][scale=0.8]{
+//image[startaws106][「インバウンドルール」タブで「編集」をクリック][scale=0.8]{
 //}
 
 データベースに記事データを保存したり、データベースへ記事データを取りに行ったりするのはEC2のインスタンス上で動いているWordPressですので、このセキュリティグループではEC2のインスタンスからRDSの「MySQL（ポート番号3306番）」へ通信できるように許可する設定をしてやらなければいけません。

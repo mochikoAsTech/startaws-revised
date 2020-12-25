@@ -420,7 +420,7 @@ Windowsのパソコンを使っている方は、デスクトップの「rlogin_
 //footnote[first][今後、別のパソコンから同じサーバへ接続する際には、元のパソコンに保存されているサーバのフィンガープリントと、初回接続時に表示されるフィンガープリントを比較することで、DNSキャッシュポイズニングなどの攻撃によって、他のサーバに誘導されていないか確認できます。]
 //footnote[fingerprint][公開鍵のハッシュ値のことをフィンガープリント（指紋）と呼びます]
 
-//image[startRLogin09][「公開鍵の確認」が表示されたら「接続する」をクリック][scale=0.6]{
+//image[startRLogin09][「公開鍵の確認」が表示されたら「接続する」をクリック][scale=0.4]{
 //}
 
 続いて「信頼するホスト鍵のリストを更新しますか？」と聞かれたら「はい」をクリック（@<img>{startRLogin10}）してください。
@@ -612,9 +612,9 @@ EC2ダッシュボードの左メニューで「ネットワーク&セキュリ�
 
 === サーバに入るときに使うドメイン名を作ろう
 
-マネジメントコンソールの左上にある「サービス」から、「ネットワーキング＆コンテンツ配信」の下にある「Route53」（@<img>{startaws15}）をクリックしてください。
+マネジメントコンソールの左上にある「サービス」から、「ネットワーキングとコンテンツ配信」の下にある「Route53」（@<img>{startaws15}）をクリックしてください。
 
-//image[startaws15][サービス＞ネットワーキング＆コンテンツ配信＞Route53][scale=0.8]{
+//image[startaws15][サービス＞ネットワーキングとコンテンツ配信＞Route53][scale=0.8]{
 //}
 
 Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」をクリック（@<img>{startaws16}）します。
@@ -648,7 +648,7 @@ Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」�
 
 ではこのドメイン名を使って再びサーバにログインしてみましょう。Windowsの方はRLoginで左のアイコンをクリック（@<img>{startaws21}）してから「編集」をクリックしてください。「ホスト名（サーバーIPアドレス）」を先ほど作ったドメイン名の「login.自分のドメイン名」に変更（@<img>{startaws22}）したらOKをクリックします。
 
-//image[startaws21][「編集」をクリック][scale=0.8]{
+//image[startaws21][「編集」をクリック][scale=0.6]{
 //}
 
 //image[startaws22][「ホスト名（サーバーIPアドレス）」を「login.自分のドメイン名」にしてOKをクリック][scale=0.8]{
@@ -661,7 +661,7 @@ Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」�
 
 この「login.自分のドメイン名」という名前でサーバに接続するのは初めてなので、また「公開鍵の確認」が表示（@<img>{startaws24}）されますが「接続する」をクリックしてください。
 
-//image[startaws24][「公開鍵の確認」が表示されたら「接続する」をクリック][scale=0.6]{
+//image[startaws24][「公開鍵の確認」が表示されたら「接続する」をクリック][scale=0.4]{
 //}
 
 続いて「信頼するホスト鍵のリストを更新しますか？」と聞かれたら「はい」をクリック（@<img>{startaws25}）してください。
@@ -772,7 +772,7 @@ rootになっているときにexitを叩くとec2-userに戻れます。そし�
 $ exit
 //}
 
-exitをせずに右上の赤い×を押してウィンドウを閉じるのは、電話を切るときに、通話オフのボタンを押さずにいきなり電話線を引っこ抜くような乱暴な切り方なのでお勧めしません。
+exitをせずに×を押してウィンドウを閉じるのは、電話を切るときに、通話オフのボタンを押さずにいきなり電話線を引っこ抜くような乱暴な切り方なのでお勧めしません。
 
 === ミドルウェアをインストール
 
@@ -801,7 +801,8 @@ $ sudo su -
 //footnote[mysqlYumRepos][yumコマンドをたたいたとき、一体どこからwhoisコマンドやMySQLクライアントを連れてきてくれてるんだろう、と不思議に思いませんか？思いますよね。思う前提で話を進めます。あなたがyumコマンドを叩くと、「Yumリポジトリ」という場所から指定されたミドルウェアのパッケージを連れてきます。どこのYumリポジトリへ探しに行くかは「/etc/yum.repos.d/」の下にあるファイルで設定されています。探しに行った先のYumリポジトリに指定のパッケージがなければ、"No package ○○ available."（○○は入手できなかったよ）というメッセージが出てインストールはできません。ないものはインストールできないのです。今回はMySQLクライアントをインストールしたいのですが、Amazon Linux 2でもともと設定されている「Amazon Linux 2 core repository」というYumリポジトリには、MySQLクライアントが存在しないため、MySQLクライアントが存在しているMySQLのYumリポジトリを、探しに行く先として追加します。 @<href>{https://dev.mysql.com/downloads/repo/yum/}]
 
 //cmd{
-# yum install https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
+# yum install ←実際は改行せずに「-y」まで1行です
+  https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
 # yum install mysql-community-client -y
 //}
 
@@ -828,7 +829,8 @@ Apacheの正式名称は「Apache HTTP Server」です。ちょっと分かり�
 
 //cmd{
 # systemctl enable --now httpd
-Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd/system/httpd.service.
+Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service
+to /usr/lib/systemd/system/httpd.service.
 //}
 
 自動起動の設定ができたか確認してみましょう。enabled（有効）と表示されれば問題ありません。
@@ -1004,7 +1006,8 @@ locale: ja_JP.UTF-8
     1  sudooo su -
     2  yum update -y
     3  yum install whois
-    4  yum install https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
+    4  yum install 
+       https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm -y
     5  yum install mysql-community-client -y
     6  amazon-linux-extras install php7.4 -y
     7  yum install php php-mbstring -y
@@ -1111,7 +1114,7 @@ $ sudo su -
 
 @<ttb>{ターミナルはサーバを操作するための画面}です。
 
-皆さんがパソコン使うときはモニタに表示された画面を見ながらキーボードとマウスを使って「フォルダを開いて先週作ったWordファイルを探す」とか「Wordファイルを開いて今週の報告書を書く」というような操作をすると思います。フォルダを開くときは「ダブルクリック」をして、書いた内容を保存するときは「上書き保存する」ボタンを押しますよね。
+皆さんがパソコン使うときは、モニタに表示された画面を見ながらキーボードとマウスを使って「フォルダを開いて先週作ったWordファイルを探す」とか「Wordファイルを開いて今週の報告書を書く」というような操作をすると思います。フォルダを開くときは「ダブルクリック」をして、書いた内容を保存するときは「上書き保存する」ボタンを押しますよね。
 
 サーバも同じです。サーバを使うときは「ターミナル」という画面を開いて操作します。ディレクトリ@<fn>{dir}を開いて移動するときは、フォルダをダブルクリックする代わりにcd@<fn>{cd}というコマンドを叩いて移動しますし、ディレクトリの中を見るときもダブルクリックでフォルダを開く代わりにlsコマンドを叩いて見ます。
 
