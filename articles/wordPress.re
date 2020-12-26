@@ -191,35 +191,30 @@ WordPress本体やプラグイン、テーマなどで新しいバージョン�
 //image[startaws123][テーマを変えると見た目もがらっと変わる][scale=0.8]{
 //}
 
-=== 【ドリル】WordPressからのメールが迷惑メール扱いされてしまう
+=== 【ドリル】WordPressからのパスワードリセットメールが届かない
 
 ==== 問題
 
-「AWSをはじめよう」を読みながら構築した環境で、WordPressの管理画面に入るパスワードを忘れてしまったためパスワードのリセットを行いました。ところがいくら待ってもメールが届きません。確認したところパスワードリセットのメール（@<img>{startaws206}）は迷惑メールのトレイに入っていました。
+「AWSをはじめよう」を読みながら構築した環境で、WordPressの管理画面に入るパスワードを忘れてしまったためパスワードのリセットを行いました。ところがいくら待ってもパスワードリセットのメールがGmailに届きません。どうすればメールが届くのでしょう？
 
-//image[startaws206][パスワードリセットのメールが迷惑メール扱いされていた][scale=0.6]{
-//}
-
-原因は「SPFが設定されていないこと」のようです。送信元のメールアドレスは「WordPress <wordpress@startdns.fun>」でした。このとき次のどれを設定すれば迷惑メール扱いされなくなるでしょうか？
-
- * A. startdns.funのTXTレコードに「v=spf1 ip4:xxx.xxx.xxx.xxx ~all」のようにElastic IPのアドレスを設定する
- * B. www.startdns.funのTXTレコードに「v=spf1 ip4:xxx.xxx.xxx.xxx ~all」のようにElastic IPのアドレスを設定する
- * C. startdns.funのTXTレコードに「v=spf1 a:login.startdns.fun ~all」のようにSSHログインで使っているドメイン名を設定する
+ * A. WordPressの管理画面でメール送信元の設定をすれば届くようになる
+ * B. マネジメントコンソールからEメール送信制限解除申請をすれば届くようになる
+ * C. 実は迷惑メールのトレイに届いている
 
 //raw[|latex|\begin{reviewimage}\begin{flushright}\includegraphics[width=0.5\maxwidth\]{./images/answerColumnShort.png}\end{flushright}\end{reviewimage}]
 
 ==== 解答
 
-正解はAまたはCです。SPFレコードを設定すべきなのは、サイトのドメイン名ではなく、送信元のメールアドレスで使われているドメイン名です。EC2のインスタンスからメールが送信されるとき送信元のIPアドレスはElastic IPとなります。Aのように直接Elastic IPのIPアドレスを指定してもいいですし、CのようにElastic IPと紐づいているドメイン名を指定しても構いません。
+正解はBです。EC2のインスタンスからメールを送信しようとしても、実は初期状態では25番ポート@<fn>{port25}に対する通信の制限がかけられているので、メールの送信ができません@<fn>{limitAmount}。つまりサーバからスパムメールをむやみやたらと送れないよう、初期制限がかかっているのです。メールを送信したい場合は、マネジメントコンソールで「Eメール送信制限解除申請@<fn>{email}」を行いましょう。@<fn>{spf}
 
-CのようにしておくとElastic IPが変更になったときに「login.startdns.fun」のAレコードだけを変更すればいいため、変更箇所が少なくて済みます。
-
-//image[startaws207][筆者はCの方法でSPFレコードを設定しました][scale=0.8]{
-//}
+//footnote[port25][メール送信で使用するポート番号。]
+//footnote[limitAmount][「Eメール送信制限解除申請」のページには"We enforce default limits on the amount of email that can be sent from EC2 accounts."（EC2アカウントから送信できるメールの量にデフォルトの制限をかけています）とあるので、あくまで「量に制限をかけている」ように読めるのですが、筆者が2020年12月に試したときは、そもそも外部のメールサーバに対して25番で通信しようとすると「Connection timed out」になってしまい、最初からまったく送れない状態だったため、無料利用枠で立てたインスタンスの場合は、送れる量の上限がそもそも0になっていて一切送れないのでは？と想像しています。この制限について詳しくは、「EC2インスタンスからポート25の制限を削除するにはどうすればよいですか？」を参照してください。 @<href>{https://aws.amazon.com/jp/premiumsupport/knowledge-center/ec2-port-25-throttle/}]
+//footnote[email][@<href>{https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request}]
+//footnote[spf][メールが迷惑メールと判定されずにきちんと宛先へ届くためには、この制限解除とはまた別に、SPFレコードやPTRレコード（逆引き）の設定も必要です。その辺りは「DNSをはじめよう」で説明しているので、本書では省略します。]
 
 === 管理画面にダイジェスト認証をかけよう
 
-ところでWordPressは利用者が多いため、その管理画面を乗っ取ろうと狙ってくる攻撃も多いです。「こんな作ったばかりの小さなブログに攻撃なんか来ないのでは？」と思われるかもしれませんが、攻撃者はIPアドレスを端から順番に試していくだけなので、サイトの開設時期や規模にかかわらず、どんなサーバでも攻撃はされると思って間違いありません。
+ところでWordPressは利用者が多いため、その管理画面を乗っ取ろうと狙ってくる攻撃も多いです。「こんな作ったばかりの小さなブログに攻撃なんか来ないのでは？」と思われるかもしれませんが、攻撃者はIPアドレスを端から順番に試していくだけなので、@<ttb>{サイトの開設時期や規模にかかわらず、どんなサーバでも攻撃はされる}と思って間違いありません。
 
 管理画面にログインするにはユーザー名とパスワードの認証が必要ですが、安全のためその手前にもうひとつ「ダイジェスト認証」という認証をかけておきましょう。EC2のインスタンスでコマンドを叩きますのでRLoginやターミナルに戻ってrootになってください。
 
@@ -227,13 +222,20 @@ CのようにしておくとElastic IPが変更になったときに「login.sta
 $ sudo su -
 //}
 
-rootになったら先ずはhtdigestコマンドを使ってダイジェスト認証のパスワードファイルを作成します。
+rootになったら先ずはhtdigestコマンドを使ってダイジェスト認証のパスワードファイルを作成します。ここではユーザー名を「start-aws-digest-user」、パスワードを「start-aws-digest-password」としますが、もし自分で考えたユーザー名やパスワードにした場合は忘れないように必ずメモしておきましょう。（@<table>{digestUserData}）
+
+//table[digestUserData][ダイジェスト認証情報]{
+ダイジェスト認証情報	例	自分のダイジェスト認証情報
+------------------------------------
+ユーザー名	start-aws-digest-user	
+パスワード	start-aws-digest-password	
+//}
 
 //cmd{
 # htdigest -c /etc/httpd/conf/htdigest wp-admin-area start-aws-digest-user
 //}
 
-「New password:」と表示されたら「start-aws-digest-password」と入力してEnterキーを押してください。再度「Re-type new password:」とパスワードを求められますので、もう一度「start-aws-digest-password」と入力してEnterキーを押します。
+「New password:」と表示されたら、パスワードの「start-aws-digest-password」を入力してEnterキーを押してください。再度「Re-type new password:」とパスワードを求められますので、もう一度「start-aws-digest-password」と入力してEnterキーを押します。
 
 //cmd{
 New password:
@@ -253,7 +255,7 @@ start-aws-digest-user:wp-admin-area:10b74c85e2a0273d00eee83755e329b8
 # vi /etc/httpd/conf.d/start-aws-virtualhost.conf 
 //}
 
-i（アイ）を押して「編集モード」になったら、次のようになダイジェスト認証の設定をVirtualHostディレクティブの中に追記します。
+i（アイ）を押して「編集モード」になったら、次のようなダイジェスト認証の設定をVirtualHostディレクティブの中に追記します。
 
 //cmd{
 <Directory "/var/www/start-aws-documentroot/wp-admin">
@@ -264,7 +266,7 @@ i（アイ）を押して「編集モード」になったら、次のように�
 </Directory>
 //}
 
-書き終わったらESCキーを押して「閲覧モード」に戻り、「:wq」と入力してEnterキーを押せば保存されます。保存できたら確認のためcatコマンドを叩いてダイジェスト認証の設定が追加されているか確認してください。
+書き終わったらESCキーを押して「閲覧モード」に戻り、「:wq」と入力してEnterキーを押せば保存されます。保存できたら、確認のためcatコマンドを叩いて、ダイジェスト認証の設定が追加されているか確認してください。
 
 //cmd{
 # cat /etc/httpd/conf.d/start-aws-virtualhost.conf
@@ -310,13 +312,13 @@ Syntax OK
 
 続いてブラウザでWordPressの管理画面（@<href>{http://www.自分のドメイン名/wp-admin/}）を開いてみましょう。すると「ユーザー名とパスワードを入力してください」というダイジェスト認証のポップアップが表示（@<img>{startaws125}）されますので、先ほど設定したダイジェスト認証のユーザー名とパスワードを入力して「OK」をクリックしてください。（@<table>{digestAuth}）
 
-//image[startaws125][管理画面では「ユーザー名とパスワードを入力してください」というダイジェスト認証のポップアップが表示された][scale=0.8]{
-//}
-
-//table[digestAuth][ダイジェスト認証の情報]{
+//table[digestAuth][ダイジェスト認証の例]{
 ------------------------------------
 ユーザー名	start-aws-digest-user
 パスワード	start-aws-digest-password
+//}
+
+//image[startaws125][管理画面では「ユーザー名とパスワードを入力してください」というダイジェスト認証のポップアップが表示された][scale=0.8]{
 //}
 
 正しいユーザー名とパスワードを入れれば管理画面に入るためのログイン画面（もしくは管理画面）が表示（@<img>{startaws127}）されますが、間違ったものを入力すると「Unauthorized」と表示（@<img>{startaws128}）されて管理画面には入れません。これで管理画面は「ダイジェスト認証」と「WordPressの認証」の2段階@<fn>{3rdAuth}で守られるようになりました。
@@ -334,23 +336,25 @@ Syntax OK
 ところでWordPressで画像をアップすると、画像ファイルはドキュメントルート以下にある「wp-content/uploads」というディレクトリに保存されます。
 
 //cmd{
-/var/www/start-aws-documentroot/wp-content/uploads/
+# ls -l /var/www/start-aws-documentroot/wp-content/uploads/
+合計 0
+drwxr-xr-x 3 apache apache 16 12月 26 01:04 2020
 //}
 
 ですが画像をEC2インスタンス内に直接保存することによって、次のようなデメリットが発生します。
 
- 1. アクセス数が増えてきて負荷分散のためウェブサーバの台数を増やしたときに画像が片方のサーバにしか保存されず、もう1台のサーバでは記事内の画像が表示されなくなってしまう
+ 1. アクセス数が増えてきて、負荷分散のためウェブサーバの台数を増やしたときに、画像が片方のサーバにしか保存されず、もう1台のサーバでは記事内の画像が表示されなくなってしまう
  2. ウェブサーバが壊れてAMI@<fn>{ami}から復元したとき、画像のフォルダがAMIを作った時点まで先祖返りしてしまい、記事内の画像が表示されなくなってしまう
 
 //footnote[ami][AMIについては@<chapref>{backup}で解説します。]
 
-そこで台数を増やしたりサーバを復元したりしたときでも記事内の画像が問題なく表示されるよう、WordPressでアップした画像はインスタンス内に保存するのではなくAmazon S3に保存するようにしておきましょう。
+そこで台数を増やしたりサーバを復元したりしたときでも、記事内の画像が問題なく表示されるよう、WordPressでアップした画像はインスタンス内に保存するのではなくAmazon S3に保存するようにしておきましょう。
 
 === Amazon S3とは？
 
 Amazon S3というのは「Amazon Simple Storage Service」の略で、頭文字のSが3つなのでS3です。シンプルストレージという名前のとおり、S3はDropboxやGoogleクラウドのようにファイルを保存しておけるサービスです。S3は99.999999999%@<fn>{nine}の耐久性をもち、格納できるデータの容量も無制限ですので「ハードディスクが壊れて保存してた画像が全部消えちゃった…」「容量がいっぱいになっちゃってこれ以上保存できない！」といったトラブルとも無縁です。
 
-//footnote[nine][イレブンナインと読みます。格好いい…！]
+//footnote[nine][9が11並んでいるのでイレブンナインと読みます。格好いい…！]
 
 S3に保存した画像ファイルにはすべてURLが付与され、HTTPSでどこからでもアクセスができます。
 
@@ -358,12 +362,22 @@ S3に保存した画像ファイルにはすべてURLが付与され、HTTPSで�
 
 皆さんがマネジメントコンソールにログインするときに使っている「start-aws-user」というIAMユーザーは「AdministratorAccess」という一番強い権限を持っています。このIAMユーザーをそのままWordPressに使わせるのは危険ですので「IAMユーザーには必要最小限の権限だけを付与すべき」という原則にしたがって、S3にファイルを保存するためだけのIAMユーザーを作成しましょう。
 
-WordPressでアップしたファイルをS3に保存するため、先ずはIAMのアクセスキーを発行します。細かな手順は省略@<fn>{iamAgain}しますが、マネジメントコンソールでIAMダッシュボードを開いて次のような流れでS3アップ専用のIAMユーザーを作成してください。
+WordPressでアップしたファイルをS3に保存するため、先ずはIAMのアクセスキーを発行します。細かな手順は省略@<fn>{iamAgain}しますが、マネジメントコンソールにルートユーザでログインした上で、IAMダッシュボードを開いて次のような流れでS3アップ専用のIAMユーザーを作成してください。
 
  1. s3-upload-groupというIAMグループを作る
  2. s3-upload-groupにAmazonS3FullAccessというポリシーをアタッチする
  3. s3-upload-userというIAMユーザを作って「アクセスの種類」を「プログラムによるアクセス」にする
  4. s3-upload-userをs3-upload-groupに追加する
+
+
+ 1. s3-upload-roleというIAMロールを作ってAmazonS3FullAccessというポリシーをアタッチする
+ 2. EC2のインスタンスで「アクション＞セキュリティ＞IAMロールの変更」
+ 3. インスタンスにs3-upload-roleをアタッチする
+ 4. 「WP Offload Media Lite for Amazon S3, DigitalOcean Spaces, and Google Cloud Storage」をインストールして、有効化
+ 5. Settingsを開く
+ 6. creating new bucketで作る でよさそう
+
+この方法なら「アクセスキーID」と「シークレットアクセスキー」もいらないし、Amazon Web Servicesプラグインもいらない。
 
 //footnote[iamAgain][@<chapref>{doTheFirst}でIAMグループとIAMユーザーを作ってポリシーをアタッチしたときとほぼ同じ手順ですのでそちらを参照してください。大きく異なるのはIAMユーザーの「アクセスの種類」が「AWSマネジメントコンソールへのアクセス」ではなく「プログラムによるアクセス」になっている点です。マネジメントコンソールにログインして操作するのではなく、WordPressのプログラムからS3を利用したいので「プログラムによるアクセス」を選択しています。]
 
@@ -376,7 +390,7 @@ S3アップ専用のIAMユーザが作成（@<img>{startaws147}）できたら�
 
 この2つはとても大切なものです。他の人に知られるとS3へ無断でファイルをアップされたり、S3にアップしたファイルを消されたりしてしまいますので、@<ttb>{アクセスキーIDとシークレットアクセスキーは外部へ絶対に漏らさない}@<fn>{aKey}ようにしてください。ソースコードに直接書いてそれをGitHubの公開リポジトリへプッシュしてしまう、というのがありがちな失敗です。
 
-//footnote[aKey][筆者は堂々と本書に載せていますが、勿論このアクセスキーはすでに無効にしてありますのでご安心ください。]
+//footnote[aKey][筆者は堂々と本書に載せていますが、もちろんこのアクセスキーはすでに無効にしてありますのでご安心ください。]
 
 S3アップ専用のIAMユーザが作成できたら、WordPressプラグインのインストールに進みましょう。
 
@@ -389,7 +403,7 @@ WordPressのプラグイン（拡張機能）を使って、記事の画像をS3
 
 ==== Amazon Web Servicesプラグイン
 
-「プラグイン」の「新規追加」をクリック（@<img>{startaws144}）して、「プラグインの検索...」と書かれたところに「Amazon Web Services」と入力します。「Amazon Web Services」が表示されたら「今すぐインストール」をクリックします。
+ブラウザでWordPressの管理画面（@<href>{http://www.自分のドメイン名/wp-admin/}）を開き、ダイジェスト認証と管理画面へのログインを行います。管理画面にログインできたら、「プラグイン」の「新規追加」をクリック（@<img>{startaws144}）して、「プラグインの検索...」と書かれたところに「Amazon Web Services」と入力します。「Amazon Web Services」が表示されたら「今すぐインストール」をクリックします。
 
 //image[startaws144][「Amazon Web Services」を検索して「今すぐインストール」をクリック][scale=0.8]{
 //}

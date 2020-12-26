@@ -812,7 +812,7 @@ WordPressを動かすために必要なPHP7.4@<fn>{php74}も入れます。
 
 //cmd{
 # amazon-linux-extras install php7.4 -y
-# yum install php php-mbstring -y
+# yum install php php-mbstring php-xml php-gd -y
 //}
 
 ウェブサーバとして動かすためのApache2.4@<fn>{version}も入れます。
