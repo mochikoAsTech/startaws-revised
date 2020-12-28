@@ -329,66 +329,37 @@ RemoteIPHeader X-Forwarded-For
 
 == Auto Scalingでサーバを自動復旧させよう
 
-AWS Auto Scaling（オートスケーリング）はサーバの自動拡張・縮小をしてくれるサービスです。アクセスが増えてきてウェブサーバ1台ではさばききれなくなったらAuto Scalingが自動的に追加のサーバを立ててくれますし、アクセス数が落ち着いてきて1台で十分な状態になったら自動的に不要なサーバを削除してくれます。
+AWS Auto Scaling（オートスケーリング）はサーバの自動拡張・縮小をしてくれるサービスです。アクセスが増えてきてウェブサーバ1台ではさばききれなくなったら、Auto Scalingが自動的に追加のサーバを立ててくれますし、アクセス数が落ち着いてきて1台で十分な状態になったら自動的に不要なサーバを削除してくれます。
 
-しかし本書ではAuto Scalingを拡張や縮小ではなく「インスタンス数の維持」のために利用します。何か問題が起きてEC2のインスタンスが停止してしまっても、Auto Scalingによって新たにインスタンスが1台立てられてウェブサイトが自動復旧する状態を目指します。
+しかし本書では@<ttb>{Auto Scalingを拡張や縮小ではなく「インスタンス数の維持」のために利用}します。何か問題が起きてEC2のインスタンスが停止してしまっても、Auto Scalingによって新たにインスタンスが1台立てられて、ウェブサイトが自動復旧する状態を目指します。
 
 === 起動設定を作成しよう
 
-EC2ダッシュボードの左メニューで「AUTO SCALING」の下にある「起動設定」をクリック（@<img>{startaws163}）してください。この「起動設定」ではAuto Scalingが自動で立てるEC2インスタンスのAMIやインスタンスタイプを指定します。続いて「起動設定の作成」をクリックしてください。
+EC2ダッシュボードの左メニューで、「Auto Scaling」の下にある「起動設定（Launch Configurations）」@<fn>{english}を開きます。（@<img>{startaws163}）この「起動設定（Launch Configurations）」では、Auto Scalingが自動で立てるEC2インスタンスのAMIやインスタンスタイプを指定します。「起動設定の作成」をクリックしてください。
 
 //image[startaws163][「起動設定」で「起動設定の作成」をクリック][scale=0.8]{
 //}
 
-ここからは6つのステップで起動設定を作成していきます。
+//footnote[english][急に左メニューが英語になりましたが、マネジメントコンソールではよくあることです。気にせず進みましょう。]
 
-==== 1. AMI の選択
+起動設定名に「start-aws-autoscaling-launch-config」を入力します。Amazonマシンイメージ（AMI）は、@<chapref>{backup}で作成した「start-aws-ami」というAMIを選択（@<img>{startaws164}）します。
 
-「マイAMI」をクリックしたら@<chapref>{backup}で作成した「start-aws-ami」というAMIを選択（@<img>{startaws164}）します。
-
-//image[startaws164][「マイAMI」で「start-aws-ami」を選択][scale=0.8]{
+//image[startaws164][AMIは「start-aws-ami」を選択][scale=0.8]{
 //}
 
-==== 2. インスタンスタイプの選択
+インスタンスタイプは、「インスタンスタイプの選択」をクリック（@<img>{startaws165}）して、現在のインスタンスと同じ「t2.micro」を選択します。
 
-インスタンスタイプは現在のインスタンスと同じ「t2.micro」が選択されているので、そのまま「次の手順: 詳細設定」をクリック（@<img>{startaws165}）します。
-
-//image[startaws165][「t2.micro」が選択されているのでそのまま「次の手順: 詳細設定」をクリック][scale=0.8]{
+//image[startaws165][「インスタンスタイプの選択」をクリックして「t2.micro」を選択][scale=0.8]{
 //}
 
-==== 3. 詳細設定
+追加設定やストレージ（ボリューム）は、何も変更せずそのままで構いません。セキュリティグループは、「既存のセキュリティグループを選択する」を選択（@<img>{startaws168}）して、現在のインスタンスと同じ「ec2-security-group」にチェックを入れます。
 
-「名前」には現在のインスタンスと同じ「start-aws-instance」を入力して「次の手順: ストレージの追加」をクリック（@<img>{startaws166}）します。
-
-//image[startaws166][「名前」に「start-aws-instance」を入力して「次の手順: ストレージの追加」をクリック][scale=0.8]{
+//image[startaws168][「ec2-security-group」にチェックを入れる][scale=0.8]{
 //}
 
-==== 4. ストレージの追加
+「キーペア（ログイン）」では、「Auto Scalingが自動で立てるEC2インスタンスに、既存のキーペアの鍵穴を設置しますか？それとも新しくキーペアを作り直してその鍵穴を設置しますか？」と聞かれています。Auto Scalingで自動起動したインスタンスにも同じ鍵でSSHログインしたいので、キーペアのオプションは「既存のキーペアの選択」のまま（@<img>{startaws170}）で、「start-aws-keypair」を選択してください。チェックボックスにチェックを入れて「起動設定の作成」をクリックします。
 
-現在のインスタンスと同じ8GBのままでいいので、そのまま「次の手順: セキュリティグループの設定」をクリック（@<img>{startaws167}）してください。
-
-//image[startaws167][そのまま「次の手順: セキュリティグループの設定」をクリック][scale=0.8]{
-//}
-
-==== 5. セキュリティグループの設定
-
-「既存のセキュリティグループを選択する」をクリック（@<img>{startaws168}）して、現在のインスタンスと同じ「ec2-security-group」にチェックを入れたら「確認」をクリックします。
-
-//image[startaws168][「ec2-security-group」にチェックを入れたら「確認」をクリック][scale=0.8]{
-//}
-
-==== 6. 確認
-
-「起動設定」の内容を確認したら「起動設定の作成」をクリック（@<img>{startaws169}）してください。
-
-//image[startaws169][「起動設定」の内容を確認したら「起動設定の作成」をクリック][scale=0.8]{
-//}
-
-==== 既存のキーペアを選択
-
-「既存のキーペアを選択するか、新しいキーペアを作成します」と表示（@<img>{startaws170}）されました。これはAuto Scalingが自動で立てるEC2インスタンスに、既存のキーペアの鍵穴を設置しますか？それとも新しくキーペアを作り直してその鍵穴を設置しますか？と聞かれています。Auto Scalingで自動起動したインスタンスにも同じ鍵でSSHログインしたいので「既存のキーペアを選択」で「start-aws-keypair」になっていることを確認したら、チェックボックスにチェックを入れて「起動設定の作成」をクリックしてください。
-
-//image[startaws170][チェックボックスにチェックを入れて「起動設定の作成」をクリックク][scale=0.8]{
+//image[startaws170][チェックボックスにチェックを入れて「起動設定の作成」をクリック][scale=0.8]{
 //}
 
 「起動設定が正常に作成されました: start-aws-instance」と表示されたら「この起動設定を使用してAuto Scalingグループを作成する」をクリック（@<img>{startaws171}）します。
@@ -396,71 +367,88 @@ EC2ダッシュボードの左メニューで「AUTO SCALING」の下にある�
 //image[startaws171][起動設定が作成できたら「この起動設定を使用してAuto Scalingグループを作成する」をクリック][scale=0.8]{
 //}
 
+「起動設定: start-aws-autoscaling-launch-config が正常に作成されました」と表示（@<img>{startaws166}）されたら、起動設定の作成は完了です。
+
+//image[startaws166][「インスタンスタイプの選択」をクリックして「t2.micro」を選択][scale=0.8]{
+//}
+
 === Auto Scalingグループを作成しよう
 
-「起動設定」ができたら続いて「Auto Scalingグループ」を作成します。Auto ScalingグループはEC2インスタンスのグループのことで、このグループで常に維持したいインスタンスの数などを設定します。インスタンスの数はここで設定した最小数と最大数の間で増減します。
+「起動設定」ができたら続いて「Auto Scalingグループ」を作成します。Auto ScalingグループはEC2インスタンスのグループのことで、このグループで常に維持したいインスタンスの数などを設定します。インスタンスの数はここで設定した最小数と最大数の間で増減します。「start-aws-autoscaling-launch-config」にチェック（@<img>{startaws167}）を入れて、「アクション」から「Auto Scalingグループの作成」をクリックしてください。
 
-ここからは5つのステップでAuto Scalingグループを作成していきます。
-
-==== 1. Auto Scaling グループの詳細設定
-
-グループ名に「start-aws-autoscaling-group」と入力して、サブネットは既存のEC2インスタンスと同じ「ap-northeast-1a」を選択したら「高度な詳細」をクリック（@<img>{startaws172}）します。
-
-//image[startaws172][グループ名に「start-aws-autoscaling-group」と入力したら「高度な詳細」をクリック][scale=0.8]{
+//image[startaws167][「アクション」から「Auto Scalingグループの作成」をクリック][scale=0.8]{
 //}
 
-「高度な詳細」では「ロードバランシング」にチェック（@<img>{startaws173}）を入れます。「ターゲットグループ」で「elb-target-group」を選択して、「ヘルスチェックのタイプ」は「ELB」を選択します。これでELBからのヘルスチェックに対してインスタンスが応答しなくなったら、Auto Scalingによって自動的にインスタンスが立てられることになります。すべて設定したら「次の手順: スケーリングポリシーの設定」をクリックします。
+ここからは7つのステップでAuto Scalingグループを作成していきます。
 
-//image[startaws173][設定したら「次の手順: スケーリングポリシーの設定」をクリック][scale=0.8]{
+==== ステップ1. 起動テンプレートまたは起動設定を選択する
+
+Auto Scalingグループ名に「start-aws-autoscaling-group」と入力（@<img>{startaws172}）します。起動設定が、さきほど作った「「start-aws-autoscaling-launch-config」になっていることを確認して、「次へ」をクリックします。
+
+//image[startaws172][グループ名に「start-aws-autoscaling-group」と入力したら「次へ」をクリック][scale=0.8]{
 //}
 
-==== 2. スケーリングポリシーの設定
+==== ステップ2. 設定の構成
 
-本書ではAuto Scalingを拡張や縮小ではなく「インスタンス数の維持」のために利用したいので、「このグループを初期のサイズに維持する」のままで「次の手順: 通知の設定」をクリック（@<img>{startaws174}）します。
+サブネットは既存のEC2インスタンスと同じ「ap-northeast-1a」を選択して、「次へ」をクリック（@<img>{startaws173}）します。
 
-//image[startaws174][何も変更せず「次の手順: 通知の設定」をクリック][scale=0.8]{
+//image[startaws173][「ap-northeast-1a」を選択して「次へ」をクリック][scale=0.8]{
 //}
 
-==== 3. 通知の設定
+==== ステップ 3. 詳細オプションを設定
 
-「通知の追加」をクリックします。（@<img>{startaws175}）
+ロードバランシングは「Attach to an existing load balancer」（既存のロードバランサーにアタッチ）を選択（@<img>{startaws174-1}）します。
 
-//image[startaws175][「通知の追加」をクリック][scale=0.8]{
+//image[startaws174-1][「Attach to an existing load balancer」を選択][scale=0.8]{
 //}
 
-「通知の送信先」に自分の名前、「受信者」に自分のメールアドレス@<fn>{mailAddress}を記入したら「次の手順: タグを設定」をクリック（@<img>{startaws176}）します。
+ターゲットグループは「elb-target-group」を選択（@<img>{startaws174-2}）して、ヘルスチェックのタイプは「ELB」を選択します。これでELBからのヘルスチェックに対してインスタンスが応答しなくなったら、Auto Scalingによって自動的にインスタンスが立てられることになります。すべて設定したら「次へ」をクリックします。
 
-//footnote[mailAddress][メールアドレスの確認のため「AWS Notification - Subscription Confirmation」というメールが届きます。メール本文中にある「Confirm subscription」というリンクを踏んでおいてください。]
-
-//image[startaws176][自分の名前とメールアドレスを記入したら「次の手順: タグを設定」をクリック][scale=0.8]{
+//image[startaws174-2][「elb-target-group」と「ELB」を選択して「次へ」][scale=0.8]{
 //}
 
-==== 4. タグを設定
+==== ステップ 4. グループサイズとスケーリングポリシーを設定する
 
-何も変更せず「確認」をクリック（@<img>{startaws177}）します。
+本書ではAuto Scalingを拡張や縮小ではなく「インスタンス数の維持」のために利用したいので、グループサイズはすべて1のままにしておきます。その他の設定もそのままで、「次へ」をクリック（@<img>{startaws175}）します。
 
-//image[startaws177][何も変更せず「確認」をクリック][scale=0.8]{
+//image[startaws175][グループサイズはすべて1のままで「次へ」をクリック][scale=0.8]{
 //}
 
-==== 5. 確認
+==== ステップ 5. 通知を追加
 
-内容を確認したら「Auto Scalingグループの作成」をクリック（@<img>{startaws178}）してください。
+「通知の追加」をクリックします。「トピックを作成する」をクリックして、「次に通知を送信」に「start-aws-sns-topic」、「受信者」に自分のメールアドレス@<fn>{mailAddress}を記入したら「次へ」をクリック（@<img>{startaws176}）します。
 
-//image[startaws178][内容を確認したら「Auto Scalingグループの作成」をクリック][scale=0.8]{
+//footnote[mailAddress][メールアドレスの確認のため「AWS Notification - Subscription Confirmation」というメールが届きます。メール本文中にある「Confirm subscription」というリンクを踏んでおいてください。「Subscription confirmed!」と書かれたページが表示されたら、メールアドレスの確認は完了です。]
+
+//image[startaws176][メールアドレスを記入したら「次へ」をクリック][scale=0.8]{
 //}
 
-「Auto Scalingグループが正常に作成されました」と表示されたら「閉じる」をクリック（@<img>{startaws179}）します。
+==== ステップ 6. タグを追加
 
-//image[startaws179][「閉じる」をクリック][scale=0.8]{
+何も変更せず「次へ」をクリック（@<img>{startaws177}）します。
+
+//image[startaws177][何も変更せず「次へ」をクリック][scale=0.8]{
 //}
 
-これで「start-aws-autoscaling-group」というAuto Scalingグループが作成できました。早速インスタンスを削除して自動復旧するかテストしてみましょう。
+==== ステップ 7. 確認
+
+内容を確認したら「Auto Scalingグループを作成」をクリック（@<img>{startaws178}）してください。
+
+//image[startaws178][内容を確認したら「Auto Scalingグループを作成」をクリック][scale=0.8]{
+//}
+
+「start-aws-autoscaling-group, 1トピック, 1サブスクリプション, 1通知が正常に作成されました」と表示（@<img>{startaws179}）されたら、Auto Scalingグループの作成は完了です。
+
+//image[startaws179][Auto Scalingグループの作成は完了][scale=0.8]{
+//}
+
+早速インスタンスを削除して自動復旧するかテストしてみましょう。
 
 === インスタンスを削除して自動復旧を試してみよう
 
 それではインスタンスを停止してもサイトが自動復旧するのか試してみましょう。まずブラウザで「@<href>{http://www.自分のドメイン名/}」を開いてサイトが表示（@<img>{startaws199}）されていることを確認します。
 
-//image[startaws199][@<href>{http://www.自分のドメイン名/}」を開くとサイトが表示される][scale=0.8]{
+//image[startaws199][「@<href>{http://www.自分のドメイン名/}」を開くとサイトが表示される][scale=0.8]{
 //}
 
 続いてEC2ダッシュボードの左メニューで「インスタンス」をクリックしたら「start-aws-instance」を右クリックして、「インスタンスの状態」から「削除」（@<img>{startaws198}）をクリックしてみましょう。@<fn>{ami}
