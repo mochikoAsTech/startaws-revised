@@ -75,26 +75,34 @@ $ ls -ld /var/www/start-aws-documentroot
 drwxr-xr-x 5 apache apache 4096 12月 26 00:40 /var/www/start-aws-documentroot
 //}
 
-それから@<chapref>{apacheSetting}で動作確認用に作った「AWSをはじめよう」と書いてあるindex.htmlファイルは削除しておきましょう。
+@<chapref>{apacheSetting}で動作確認用に作った「AWSをはじめよう」と書いてあるindex.htmlファイルは、もう不要になるので削除しておきましょう。
 
 //cmd{
 $ sudo rm -f /var/www/start-aws-documentroot/index.html
+//}
+
+代わりに、ロードバランサーからのヘルスチェックに応答するためのファイルを作成しておきます。「ロードバランサー？ヘルスチェック？」と思われると思いますが、詳しくはまた@<chapref>{balancing}でお話ししますので、今は心を無にしてこのechoコマンドを叩いておいてください。
+
+//cmd{
+echo "healthcheck" | sudo -u apache tee /var/www/start-aws-documentroot/healthcheck > /dev/null
 //}
 
 これでドキュメントルート以下にあるのは展開したWordPressのファイルだけになりました。
 
 //cmd{
 $ ls -lh /var/www/start-aws-documentroot/
-合計 212K
+合計 220K
+-rw-r--r--  1 apache apache   12 12月 28 21:54 healthcheck
 -rw-r--r--  1 apache apache  405  2月  6  2020 index.php
 -rw-r--r--  1 apache apache  20K  2月 12  2020 license.txt
--rw-r--r--  1 apache apache 7.2K  6月 26 22:58 readme.html
+-rw-r--r--  1 apache apache 7.2K  6月 26  2020 readme.html
 -rw-r--r--  1 apache apache 7.0K  7月 29 02:20 wp-activate.php
 drwxr-xr-x  9 apache apache 4.0K 12月  9 07:13 wp-admin
 -rw-r--r--  1 apache apache  351  2月  6  2020 wp-blog-header.php
 -rw-r--r--  1 apache apache 2.3K 10月  9 06:15 wp-comments-post.php
 -rw-r--r--  1 apache apache 2.9K  2月  6  2020 wp-config-sample.php
-drwxr-xr-x  4 apache apache   52 12月  9 07:13 wp-content
+-rw-rw-rw-  1 apache apache 3.3K 12月 26 00:52 wp-config.php
+drwxr-xr-x  7 apache apache   99 12月 28 16:12 wp-content
 -rw-r--r--  1 apache apache 3.9K  7月 31 04:14 wp-cron.php
 drwxr-xr-x 25 apache apache 8.0K 12月  9 07:13 wp-includes
 -rw-r--r--  1 apache apache 2.5K  2月  6  2020 wp-links-opml.php
