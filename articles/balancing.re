@@ -352,7 +352,12 @@ EC2ダッシュボードの左メニューで、「Auto Scaling」の下にあ�
 //image[startaws165][「インスタンスタイプの選択」をクリックして「t2.micro」を選択][scale=0.8]{
 //}
 
-追加設定やストレージ（ボリューム）は、何も変更せずそのままで構いません。セキュリティグループは、「既存のセキュリティグループを選択する」を選択（@<img>{startaws168}）して、現在のインスタンスと同じ「ec2-security-group」にチェックを入れます。
+追加設定の「IAMインスタンスプロファイル」は「s3-upload-role」を選択（@<img>{startaws165-2}）します。
+
+//image[startaws165-2][「IAMインスタンスプロファイル」は「s3-upload-role」を選択][scale=0.8]{
+//}
+
+ストレージ（ボリューム）は、何も変更せずそのままで構いません。セキュリティグループは、「既存のセキュリティグループを選択する」を選択（@<img>{startaws168}）して、現在のインスタンスと同じ「ec2-security-group」にチェックを入れます。
 
 //image[startaws168][「ec2-security-group」にチェックを入れる][scale=0.8]{
 //}
@@ -362,14 +367,9 @@ EC2ダッシュボードの左メニューで、「Auto Scaling」の下にあ�
 //image[startaws170][チェックボックスにチェックを入れて「起動設定の作成」をクリック][scale=0.8]{
 //}
 
-「起動設定が正常に作成されました: start-aws-instance」と表示されたら「この起動設定を使用してAuto Scalingグループを作成する」をクリック（@<img>{startaws171}）します。
-
-//image[startaws171][起動設定が作成できたら「この起動設定を使用してAuto Scalingグループを作成する」をクリック][scale=0.8]{
-//}
-
 「起動設定: start-aws-autoscaling-launch-config が正常に作成されました」と表示（@<img>{startaws166}）されたら、起動設定の作成は完了です。
 
-//image[startaws166][「インスタンスタイプの選択」をクリックして「t2.micro」を選択][scale=0.8]{
+//image[startaws166][起動設定が作成できた][scale=0.8]{
 //}
 
 === Auto Scalingグループを作成しよう
