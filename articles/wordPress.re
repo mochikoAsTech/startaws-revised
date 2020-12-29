@@ -84,7 +84,8 @@ $ sudo rm -f /var/www/start-aws-documentroot/index.html
 代わりに、ロードバランサーからのヘルスチェックに応答するためのファイルを作成しておきます。「ロードバランサー？ヘルスチェック？」と思われると思いますが、詳しくはまた@<chapref>{balancing}でお話ししますので、今は心を無にしてこのechoコマンドを叩いておいてください。
 
 //cmd{
-echo "healthcheck" | sudo -u apache tee /var/www/start-aws-documentroot/healthcheck > /dev/null
+$ cd /var/www/start-aws-documentroot/
+$ echo "healthcheck" | sudo -u apache tee healthcheck > /dev/null
 //}
 
 これでドキュメントルート以下にあるのは展開したWordPressのファイルだけになりました。
@@ -216,7 +217,7 @@ WordPress本体やプラグイン、テーマなどで新しいバージョン�
 正解はBです。EC2のインスタンスからメールを送信しようとしても、実は初期状態では25番ポート@<fn>{port25}に対する通信の制限がかけられているので、メールの送信ができません@<fn>{limitAmount}。つまりサーバからスパムメールをむやみやたらと送れないよう、初期制限がかかっているのです。メールを送信したい場合は、マネジメントコンソールで「Eメール送信制限解除申請@<fn>{email}」を行いましょう。@<fn>{spf}
 
 //footnote[port25][メール送信で使用するポート番号。]
-//footnote[limitAmount][「Eメール送信制限解除申請」のページには"We enforce default limits on the amount of email that can be sent from EC2 accounts."（EC2アカウントから送信できるメールの量にデフォルトの制限をかけています）とあるので、あくまで「量に制限をかけている」ように読めるのですが、筆者が2020年12月に試したときは、そもそも外部のメールサーバに対して25番で通信しようとすると「Connection timed out」になってしまい、最初からまったく送れない状態だったため、無料利用枠で立てたインスタンスの場合は、送れる量の上限がそもそも0になっていて一切送れないのでは？と想像しています。この制限について詳しくは、「EC2インスタンスからポート25の制限を削除するにはどうすればよいですか？」を参照してください。 @<href>{https://aws.amazon.com/jp/premiumsupport/knowledge-center/ec2-port-25-throttle/}]
+//footnote[limitAmount][「Eメール送信制限解除申請」のページには"We enforce default limits on the amount of email that can be sent from EC2 accounts."（EC2アカウントから送信できるメールの量にデフォルトの制限をかけています）とあるので、あくまで「量に制限をかけている」ように読めるのですが、筆者が2020年12月に試したときは、そもそも外部のメールサーバに対して25番で通信しようとすると「Connection timed out」になってしまい、最初からまったく送れない状態でした。そのため無料利用枠で立てたインスタンスの場合は、送れる量の上限がそもそも0になっていて一切送れないのでは？と想像しています。この制限について詳しくは、「EC2インスタンスからポート25の制限を削除するにはどうすればよいですか？」を参照してください。 @<href>{https://aws.amazon.com/jp/premiumsupport/knowledge-center/ec2-port-25-throttle/}]
 //footnote[email][@<href>{https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request}]
 //footnote[spf][メールが迷惑メールと判定されずにきちんと宛先へ届くためには、この制限解除とはまた別に、SPFレコードやPTRレコード（逆引き）の設定も必要です。その辺りは「DNSをはじめよう」で説明しているので、本書では省略します。]
 
@@ -322,7 +323,7 @@ Syntax OK
 //image[startaws126][ブログは認証なしで普通に表示される][scale=0.8]{
 //}
 
-続いてブラウザでWordPressの管理画面（@<href>{http://www.自分のドメイン名/wp-admin/}）を開いてみましょう。すると「ユーザー名とパスワードを入力してください」というダイジェスト認証のポップアップが表示（@<img>{startaws125}）されますので、先ほど設定したダイジェスト認証のユーザー名とパスワードを入力して「OK」をクリックしてください。（@<table>{digestAuth}）
+続いてブラウザでWordPressの管理画面（@<href>{http://www.自分のドメイン名/wp-admin/}）を開いてみましょう。すると「ユーザー名とパスワードを入力してください」というダイジェスト認証のポップアップが表示（@<img>{startaws125}）されます。先ほど設定したダイジェスト認証のユーザー名とパスワードを入力して「OK」をクリックしてください。（@<table>{digestAuth}）
 
 //table[digestAuth][ダイジェスト認証の例]{
 ------------------------------------
@@ -341,7 +342,7 @@ Syntax OK
 //image[startaws127][管理画面が「ダイジェスト認証」と「WordPressの認証」の2段階で守られるようになった][scale=0.8]{
 //}
 
-//footnote[3rdAuth][自宅のIPアドレスが固定の人はIP認証もかけておくとさらに安心です。]
+//footnote[3rdAuth][自宅のIPアドレスが固定の人はIP認証もかけておくとさらに安心ですね。]
 
 == 画像をS3に保存する
 
@@ -472,7 +473,7 @@ WordPressのプラグイン（拡張機能）を使って、記事の画像をS3
 //image[startaws149][「WP Offload Media Lite」を検索して「今すぐインストール」をクリック][scale=0.8]{
 //}
 
-ボタンの表示が「インストール中」の後に「有効化」になったらクリック（@<img>{startaws150}）します。
+ボタンの表示が「インストール中」の後に「有効化」になったら、再度クリック（@<img>{startaws150}）します。
 
 //image[startaws150][「有効化」になったらクリック][scale=0.8]{
 //}
@@ -492,7 +493,7 @@ WP Offload Media Liteプラグインがインストールできたので「Setti
 //image[startaws152][バケットがまだないので「Create new bucket」をクリック][scale=0.8]{
 //}
 
-「Region」は「Asia Pacific (Tokyo)」を選択し、「Bucket Name」に「start-aws-wordpress-bucket.自分のドメイン名」と入力（@<img>{startaws153}）したら「Create new bucket」をクリックします。筆者の場合は「Bucket Name」は「start-aws-wordpress-bucket.startdns.fun」です。
+「Region」は「Asia Pacific (Tokyo)」を選択し、「Bucket Name」に「@<ttb>{start-aws-wordpress-bucket.自分のドメイン名}」と入力（@<img>{startaws153}）したら「Create new bucket」をクリックします。筆者の場合は「Bucket Name」は「start-aws-wordpress-bucket.startdns.fun」です。
 
 //image[startaws153][バケットの名前とリージョンを入れて「Create new bucket」をクリック][scale=0.8]{
 //}
@@ -504,10 +505,10 @@ WP Offload Media Liteプラグインがインストールできたので「Setti
 
 「WP Offload Media Lite」の設定画面に戻って、「Force HTTPS」をオン（@<img>{startaws155}）にしたら「Save Changes」をクリックします。@<fn>{https}
 
-//footnote[https][デフォルトだと「ページをHTTPで開いたら画像もHTTPで表示、ページをHTTPSで開いたら画像もHTTPSで表示」という設定なのですが、「Force HTTPS」をオンにしておくと「画像は常にHTTPSで表示」になります。今後サイトをHTTPS化したときに、画像のURLをHTTPからHTTPSへ書き換えなくて済むよう、最初からオンにしておくことをお勧めします。]
-
 //image[startaws155][「Force HTTPS」をオンにして「Save Changes」をクリック][scale=0.8]{
 //}
+
+//footnote[https][デフォルトだと「ページをHTTPで開いたら画像もHTTPで表示、ページをHTTPSで開いたら画像もHTTPSで表示」という設定なのですが、「Force HTTPS」をオンにしておくと「画像は常にHTTPSで表示」になります。今後サイトをHTTPS化したときに、画像のURLをHTTPからHTTPSへ書き換えなくて済むよう、最初からオンにしておくことをお勧めします。]
 
 「設定を保存しました。」と表示されたらWP Offload Media Liteプラグインの設定は完了@<fn>{cloudFront}です。
 
@@ -540,7 +541,7 @@ WP Offload Media Liteプラグインがインストールできたので「Setti
 //image[startaws160][画像を右クリックして「画像だけを表示」をクリック][scale=0.8]{
 //}
 
-すると画像のURLが「@<href>{https://s3.ap-northeast-1.amazonaws.com/start-aws-wordpress-bucket.startdns.fun/wp-content/uploads/2020/12/28161755/twitter_cover-1-1024x342.png}」のようになっている（@<img>{startaws161}）ので、WordPressでアップした画像がS3に保存されて記事に挿入されていることが分かります。
+すると画像のURLが「https://s3.ap-northeast-1.amazonaws.com/start-aws-wordpress-bucket.startdns.fun/wp-content/uploads/2020/12/28161755/twitter_cover-1-1024x342.png」のようになっている（@<img>{startaws161}）ので、WordPressでアップした画像がS3に保存されて記事に挿入されていることが分かります。
 
 //image[startaws161][画像のURLがS3になっている][scale=0.8]{
 //}

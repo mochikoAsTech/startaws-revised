@@ -14,7 +14,7 @@ WordPressを使うにはMySQLというデータベースが必要です。
 //image[startaws124][WordPressで作ったおしゃれなブログ][scale=0.8]{
 //}
 
-CMSとはContents Management Systemの略で、@<ttb>{ウェブサイトのコンテンツを管理したり、ウェブページを更新したりするためのソフト}のことです。CMSがあればHTMLやCSSなどを自分で直接編集しなくても、Wordのように文章を書いてレイアウトを整え、「更新」をクリックするだけでサイトが更新できます。
+CMSとはContents Management Systemの略で、@<ttb>{ウェブサイトのコンテンツを管理したり、ウェブページを更新したりするためのソフト}のことです。CMSがあればHTMLやCSSなどを自分で直接編集しなくても、Wordのように文章を書いてレイアウトを整え、「更新」ボタンをクリックするだけでサイトが更新できます。
 
 日本国内で人気のCMSはWordPress（ワードプレス）やMovable Type（ムーバブル・タイプ）ですが、どちらも個人利用であれば無料で使うことができます。今回はCMS界でトップシェアを誇るWordPressを使えるように環境を構築していきましょう。
 
@@ -24,19 +24,24 @@ WordPressの管理画面でブログ記事を書いて保存すると、記事�
 
 データベースには、Oracle DatabaseやPostgreSQLなど色々な種類があるのですが、その中でもMySQLは非常に普及率の高いデータベースです。
 
-MySQLは、元々MySQL ABという会社が開発してオープンソースで公開していましたが、2008年にMySQL ABがSun Microsystemsに買収され、さらに2009年にSunがOracleに買収されたため、現在はOracleのものになっています。Oracleに買収された後も、ありがたいことにMySQLは引き続きオープンソースで公開されており、2020年12月現在も無償で使えます。しかしOracleはもともとOracle Databaseという有償のデータベースも販売しているため、MySQLはその競合にあたり、今は平気でもいつかはサポートが終了したりオープンソースで公開されなくなるのでは？という懸念もあります。
+MySQLは、元々MySQL ABという会社が開発してオープンソースで公開していましたが、2008年にMySQL ABがSun Microsystemsに買収され、さらに2009年にSunがOracleに買収されたため、現在はOracleのものになっています。Oracleに買収された後も、ありがたいことにMySQLは引き続きオープンソースで公開されており、MySQL Community Editionは2020年12月現在も無償で使えます。しかしOracleはもともとOracle Databaseという有償のデータベースも販売しているため、MySQLはその競合にあたり、今は平気でもいつかはサポートが終了したりオープンソースで公開されなくなるのでは？という懸念もあります。
 
 またMySQLを最初に作った開発者はすでにOracleを離れており、MariaDBというMySQLから派生した別のデータベースを開発しています。このことからLinuxのディストリビューションであるCentOS 6やAmazon LinuxではMySQLが採用されていましたが、CentOS 7及びAmazon Linux 2からはMariaDBに切り替わっています。しかもyumでMySQLをインストールしようとすると、何も言わずにそーっとMariaDBがインストールされる落とし穴仕様です。サーバの仕様を「OSはCentOS 7でDBはMySQLです」と決めていたのに、環境構築後によくよく確認したら入っていたのはMariaDBだった、というようなことにならないようご注意ください。
 
-上記のような背景から引き続きMySQLを使うべきか、今後はMariaDBに切り替えるべきかという懸念はここ数年ずっとある気がしますが、個人的にはOracleが「MySQLの開発とサポートやめた！」と言い出すまでは積極的にMariaDBに切り替える理由もないかな、という気持ちです。
+上記のような背景から、引き続きMySQLを使うべきか、今後はMariaDBに切り替えるべきかという懸念はここ数年ずっとある気がしますが、個人的にはOracleが「MySQLの開発とサポートやめた！」と言い出すまでは積極的にMariaDBへ切り替える理由もないかな、という気持ちです。
 
-ちなみにWordPressはMySQLでもMariaDBでも動きますので、今回は深く考えずにMySQLを使いましょう。
+ちなみにWordPressはMySQLでもMariaDBでも動きますので、今回は深く考えずにMySQL@<fn>{sakila}を使いましょう。
 
 ===[/column]
 
+//footnote[sakila][ちなみにMySQLのイベントで登壇するともらえる（ことがある）、Sakila（MySQLのロゴにいるイルカ）のぬいぐるみはとてもかわいいです。オラクルのMySQLに対する愛を感じるかわいさなのです。]
+
 === EC2にインストールするか？RDSを使うか？
 
-AWSでMySQLを使いたいとき、EC2でインスタンスを作成してyumでMySQLをインストールする@<fn>{apache}方法と、Amazon RDSというサービスを使う方法があります。
+AWSでMySQLを使いたいときには、ざっくり言うと次の2つの方法があります。
+
+ 1. EC2でインスタンスを作成してyumでMySQLをインストールする@<fn>{apache}方法
+ 2. Amazon RDSというサービスを使う方法
 
 //footnote[apache][先ほどサーバにApacheをインストールしてウェブサーバを作ったのと同じように、MySQLをインストールしてデータベースサーバを作る、ということです。既にMySQLがインストールされたAMIからインスタンスを作ることもできます。]
 
@@ -88,7 +93,7 @@ RDSでのインスタンス作成に先駆けて、パラメータグループ�
 
 ここでは2つのパラメータの値を設定します。@<fn>{mysql57}
 
-//footnote[mysql57][日本語や絵文字を文字化けさせないため、MySQL5.7のときは値を「utf8mb4」に変更する必要があったcharacter_set_client、character_set_connection、character_set_database、character_set_results、character_set_serverという5つのパラメータですが、MySQL8ではデフォルト値が「utf8mb4」になったため、設定不要となりました。詳しくはMySQL 8.0 Reference Manualの「5.1.8 Server System Variables」を参照してください。 @<href>{https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html}]
+//footnote[mysql57][日本語や絵文字を文字化けさせないため、MySQL5.7のときは値を「utf8mb4」に変更する必要があったcharacter_set_client、character_set_connection、character_set_database、character_set_results、character_set_serverという5つのパラメータですが、MySQL8ではいずれもデフォルト値が「utf8mb4」になったため、設定不要となりました。詳しくはMySQL 8.0 Reference Manualの「5.1.8 Server System Variables」を参照してください。 @<href>{https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html}]
 
 先ずは「フィルタ パラメータ」と表示されているところに「collation_server」と入力して検索（@<img>{startaws90}）します。検索結果が表示されたら右上にある「パラメータの編集」ボタンをクリックしてください。
 
@@ -176,7 +181,7 @@ DBインスタンス識別子	start-aws-db-instance
 
 DBインスタンスサイズ、ストレージ、可用性と耐久性@<fn>{multiAZ}、接続、データベース認証は何も変更せずそのままで構いません。
 
-//footnote[multiAZ][「可用性と耐久性」に「マルチAZ配置」という設定があります。マルチAZ配置とは、あらかじめメインのRDSインスタンスとは別のアベイラビリティゾーンにレプリカを待機させておいて、何らかの障害でメインのRDSインスタンスが停止してしまったら自動的に待機していたインスタンスに切り替わる仕組みです。マルチAZ配置はAWSの無料利用枠に含まれないため本書ではシングルAZ配置の構成です。]
+//footnote[multiAZ][「可用性と耐久性」に「マルチAZ配置」という設定があります。マルチAZ配置とは、メインのRDSインスタンスとは別のアベイラビリティゾーンにあらかじめレプリカを待機させておいて、何らかの障害でメインのRDSインスタンスが停止してしまったら自動的に待機していたインスタンスに切り替わる仕組みです。マルチAZ配置はAWSの無料利用枠に含まれないため本書ではシングルAZ配置の構成です。]
 
 === 追加設定
 
@@ -207,7 +212,7 @@ DBパラメータグループ	start-aws-parameter-group
 //image[startaws103][「start-aws-db-instance」をクリック][scale=0.8]{
 //}
 
-//footnote[securityGroupAgain][何度か出てきていますがセキュリティグループはいわゆる「ファイアウォール」のことです。セキュリティグループってどんなものだったっけ？という方は、@<chapref>{serverBuilding}でEC2のインスタンスを作るとき「ステップ6」で設定したことを思い出してください。]
+//footnote[securityGroupAgain][何度か出てきていますが、セキュリティグループはいわゆる「ファイアウォール」のことです。セキュリティグループってどんなものだったっけ？という方は、@<chapref>{serverBuilding}でEC2のインスタンスを作るとき「ステップ6」で設定したことを思い出してください。]
 
 今作った「start-aws-db-instance」というRDSインスタンスの詳細が表示（@<img>{startaws104}）されます。
 
@@ -253,7 +258,7 @@ RDSダッシュボードを開いたら左メニューの「データベース�
 //image[startaws110][左メニューの「データベース」＞「start-aws-db-instance」をクリック][scale=0.8]{
 //}
 
-下の方にスクロールすると「接続とセキュリティ」のタブに「エンドポイント」（@<img>{startaws111}）があります。この「start-aws-db-instance.cesouf5kakle.ap-northeast-1.rds.amazonaws.com」という「エンドポイント」は、後でWordPressからデータベースに接続するときに必要となります。長いのでパソコンのメモ帳にしっかりコピーペーストしておいてください。
+下の方にスクロールすると「接続とセキュリティ」のタブに「エンドポイント」（@<img>{startaws111}）があります。この「start-aws-db-instance.cesouf5kakle.ap-northeast-1.rds.amazonaws.com」という「エンドポイント」は、後でWordPressからデータベースに接続するときに必要となります。忘れないように、コピーしてパソコンのメモ帳にしっかりメモしておいてください。
 
 //image[startaws111][「エンドポイント」をしっかりメモしておこう][scale=0.8]{
 //}
@@ -266,7 +271,7 @@ RDSダッシュボードを開いたら左メニューの「データベース�
  * マスターユーザの名前
  * マスターパスワード
 
-Windowsの方はRLoginを起動して「start-aws-instance」に接続してください。Macの方はターミナルで次のコマンドを実行してください。
+Windowsの方はRLoginを起動して「start-aws-instance」に接続してください。Macの方はターミナルで次のコマンドを実行して、「start-aws-instance」に入ります。
 
 //cmd{
 ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
