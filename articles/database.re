@@ -282,8 +282,7 @@ $ mysql -h エンドポイント -u マスターユーザの名前 -p
 
 //cmd{
 $ mysql -h start-aws-db-instance.cesouf5kakle.ap-northeast-1.rds.amazonaws.com
-        -u start_aws_dbuser -p
-※実際は改行せずに1行で実行
+        -u start_aws_dbuser -p　※実際は改行せずに1行で実行
 //}
 
 コマンドを叩くと次のように表示されます。
@@ -292,9 +291,7 @@ $ mysql -h start-aws-db-instance.cesouf5kakle.ap-northeast-1.rds.amazonaws.com
 Enter password:
 //}
 
-パスワードを求められているので「マスターパスワード」の「start_aws_db_password」を入力してEnterキーを押します。なお@<ttb>{パスワードは入力しても画面上何の変化もありません}。カーソルの位置も変わらないし「***」のような表示も一切されません。入力できている手ごたえがまったくありませんがちゃんと入力できていますし、間違えたときはBackSpaceキーを押せば消せていますので大丈夫です。パスワードを入力したらEnterキーを押してください。
-
-パスワードを入力後、次のように一番下に「mysql> 」と表示されたらMySQLへのログインに成功しています。
+パスワードを求められているので「マスターパスワード」の「start_aws_db_password」を入力してEnterキーを押します。なお@<ttb>{パスワードは入力しても画面上何の変化もありません}。カーソルの位置も変わらないし「***」のような表示も一切されません。入力できている手ごたえがまったくありませんがちゃんと入力できていますし、間違えたときはBackSpaceキーを押せば消せていますので大丈夫です。パスワードを入力したらEnterキーを押してください。パスワードを入力後、次のように一番下に「mysql> 」と表示されたらMySQLへのログインに成功しています。
 
 //cmd{
 $ mysql -h エンドポイント -u マスターユーザの名前 -p

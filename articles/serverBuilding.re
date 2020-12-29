@@ -18,7 +18,7 @@ Windowsのパソコンを使っている方は、サーバを立てる前に「�
 
 //footnote[wsl][既にWSL（Windows Subsystem for Linux）やWSL2が使える環境であれば、次の項「お使いのパソコンがMacの場合」の手順を参考に、ターミナルをインストールする代わりにWSLを使っても構いません。]
 
-//image[rlogin][RLogin][scale=0.8]{
+//image[rlogin][RLogin][scale=0.6]{
 //}
 
 本書ではいちばん上のRLogin（@<img>{rlogin}）を使って説明していきますので、特にこだわりがなければRLoginを使うことをお勧めします。RLoginの「実行プログラム(64bit)@<fn>{64bit}」（@<img>{downloadRLogin01}）のURL、@<href>{http://nanno.dip.jp/softlib/program/rlogin_x64.zip}をクリックしてください。
@@ -30,12 +30,12 @@ Windowsのパソコンを使っている方は、サーバを立てる前に「�
 
 ダウンロードしたZIPファイルを保存（@<img>{downloadRLogin02}）します。保存場所はどこでも構いませんが、後でどこに置いたか分からなくなりそうな人はデスクトップに保存しておきましょう。
 
-//image[downloadRLogin02][「ファイルを保存する」でパソコンに保存][scale=0.8]{
+//image[downloadRLogin02][「ファイルを保存する」でパソコンに保存][scale=0.5]{
 //}
 
 デスクトップのZIPファイル（rlogin_x64.zip）を右クリック（@<img>{downloadRLogin03}）して、解凍＞デスクトップに解凍@<fn>{lhaplus}をクリックします。
 
-//image[downloadRLogin03][ZIPファイルを右クリックして解凍＞デスクトップに解凍][scale=0.8]{
+//image[downloadRLogin03][ZIPファイルを右クリックして解凍＞デスクトップに解凍][scale=0.6]{
 //}
 
 //footnote[lhaplus][ZIPファイルを右クリックしても「解凍」が見当たらないときは、圧縮・解凍の定番ソフトであるLhaplusをインストールしましょう。 @<href>{https://forest.watch.impress.co.jp/library/software/lhaplus/}]
@@ -44,10 +44,10 @@ Windowsのパソコンを使っている方は、サーバを立てる前に「�
 
 //footnote[filenameExtension][フォルダの中にRLoginはあるけどRLogin.exeなんて見当たらない…という場合、ファイルの拡張子が非表示になっています。この後も拡張子を含めてファイル名を確認する場面が何度かでてきますので、表示されていない人は「拡張子 表示」でGoogle検索して、拡張子が表示されるようにWindowsの設定を変更しておきましょう。]
 
-//image[downloadRLogin04][RLogin.exeをダブルクリック][scale=0.6]{
+//image[downloadRLogin04][RLogin.exeをダブルクリック][scale=0.4]{
 //}
 
-//image[downloadRLogin05][RLoginが起動した][scale=0.8]{
+//image[downloadRLogin05][RLoginが起動した][scale=0.6]{
 //}
 
 これでRLoginのインストールは完了です。起動したRLoginはいったん「キャンセル」をクリックして閉じてしまって構いません。また後で使いますので、デスクトップの「rlogin_x64」フォルダとその中にある「RLogin.exe」をごみ箱へ捨てないように注意してください。
@@ -379,7 +379,7 @@ SSHと似ている仕組みに「FTP」@<fn>{ftp}や「Telnet」@<fn>{telnet}が
 
 Windowsのパソコンを使っている方は、デスクトップの「rlogin_x64」というフォルダの中にある「RLogin.exe」（@<img>{startRLogin01}）をダブルクリックしてRLoginを起動（@<img>{startRLogin02}）してください。起動したら「新規」をクリックします。
 
-//image[startRLogin01][RLogin.exeをダブルクリック][scale=0.6]{
+//image[startRLogin01][RLogin.exeをダブルクリック][scale=0.4]{
 //}
 
 //image[startRLogin02][RLoginが起動したら「新規」をクリック][scale=0.8]{
@@ -392,7 +392,7 @@ Windowsのパソコンを使っている方は、デスクトップの「rlogin_
 
 続いて「SSH認証鍵」をクリック（@<img>{startRLogin04}）して、デスクトップなど絶対に忘れない場所に保存しておいた「start-aws-keypair.pem」を選択したら「開く」をクリックします。
 
-//image[startRLogin04][「SSH認証鍵」をクリックして「start-aws-keypair.pem」を選択][scale=0.8]{
+//image[startRLogin04][「SSH認証鍵」をクリックして「start-aws-keypair.pem」を選択][scale=0.6]{
 //}
 
 次に左メニューで「プロトコル」を選択（@<img>{startRLogin05}）したら、「KeepAliveパケットの送信間隔(sec)」にチェックを入れておきます。これを設定しておくとターミナルをしばらく放っておいても接続が勝手に切れません。
@@ -425,7 +425,7 @@ Windowsのパソコンを使っている方は、デスクトップの「rlogin_
 
 続いて「信頼するホスト鍵のリストを更新しますか？」と聞かれたら「はい」をクリック（@<img>{startRLogin10}）してください。
 
-//image[startRLogin10][「信頼するホスト鍵のリストを更新しますか？」と表示されたら「はい」をクリック][scale=0.8]{
+//image[startRLogin10][「信頼するホスト鍵のリストを更新しますか？」と表示されたら「はい」をクリック][scale=0.4]{
 //}
 
 「Amazon Linux 2 AMI」と表示（@<img>{startRLogin11}）されたら無事サーバに入れています。SSHでのログイン成功、おめでとうございます！
@@ -435,7 +435,7 @@ Windowsのパソコンを使っている方は、デスクトップの「rlogin_
 
 もし「Amazon Linux 2 AMI」と表示されず、代わりに「SSH2 User Auth Failure "publickey,gssapi-keyex,gssapi-with-mic" Status=1004 Send Disconnect Message...」というようなエラーメッセージが表示（@<img>{startRLogin12}）されてしまったら、これは「鍵がない人は入れないよ！」とお断りされている状態です。恐らく「SSH認証鍵」をクリックして「start-aws-keypair.pem」を選択する作業を忘れているものと思われますので「SSH認証鍵」の設定を確認してみてください。
 
-//image[startRLogin12][このエラーが表示されたら「SSH認証鍵」の設定を確認しよう][scale=0.6]{
+//image[startRLogin12][このエラーが表示されたら「SSH認証鍵」の設定を確認しよう][scale=0.4]{
 //}
 
 「接続済みの呼び出し先が一定の時間を過ぎても正しく応答しなかったため、接続できませんでした。」というエラーメッセージが表示（@<img>{startRLogin13}）されてしまった場合は、「ホスト名（サーバーIPアドレス）」に書いた「パブリックIPv4アドレス」が間違っているものと思われます。「ホスト名（サーバーIPアドレス）」のIPアドレスを確認してみてください。
@@ -651,12 +651,12 @@ Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」�
 //image[startaws21][「編集」をクリック][scale=0.6]{
 //}
 
-//image[startaws22][「ホスト名（サーバーIPアドレス）」を「login.自分のドメイン名」にしてOKをクリック][scale=0.8]{
+//image[startaws22][「ホスト名（サーバーIPアドレス）」を「login.自分のドメイン名」にしてOKをクリック][scale=0.6]{
 //}
 
 「start-aws-instance」を選択（@<img>{startaws23}）したら「OK」をクリックしてください。
 
-//image[startaws23][「start-aws-instance」を選択したら「OK」をクリック][scale=0.8]{
+//image[startaws23][「start-aws-instance」を選択したら「OK」をクリック][scale=0.6]{
 //}
 
 この「login.自分のドメイン名」という名前でサーバに接続するのは初めてなので、また「公開鍵の確認」が表示（@<img>{startaws24}）されますが「接続する」をクリックしてください。
@@ -666,12 +666,12 @@ Route53ダッシュボードを開いたらDNS管理の「ホストゾーン」�
 
 続いて「信頼するホスト鍵のリストを更新しますか？」と聞かれたら「はい」をクリック（@<img>{startaws25}）してください。
 
-//image[startaws25][「信頼するホスト鍵のリストを更新しますか？」と表示されたら「はい」をクリック][scale=0.8]{
+//image[startaws25][「信頼するホスト鍵のリストを更新しますか？」と表示されたら「はい」をクリック][scale=0.4]{
 //}
 
 「Amazon Linux 2 AMI」と表示（@<img>{startaws26}）されましたか？無事にドメイン名を使ってサーバに入れました。Windowsの皆さん、おめでとうございます！
 
-//image[startaws26][ドメイン名を使ってサーバに入れた！][scale=0.8]{
+//image[startaws26][ドメイン名を使ってサーバに入れた！][scale=0.6]{
 //}
 
 Macの方はターミナルを起動して次のコマンドを実行してください。「キーボードで「↑」を押すと直前に打ったコマンドが出てきますので、アットマークの後ろElastic IPアドレスから「login.自分のドメイン名」に変更してReturnキーを押してください。

@@ -18,7 +18,7 @@ AWSについてもっと勉強したい！という場合は、ネットに繋�
 
 AWSには公式の認定資格（@<img>{AWSCertificationRoadmap}）@<fn>{officialRoadmap}がいくつかあるのですが、その中で最初に挑戦しやすい入門者向けの認定資格は「クラウドプラクティショナー」です。
 
-//image[AWSCertificationRoadmap][AWS認定資格のロードマップ][scale=0.8]{
+//image[AWSCertificationRoadmap][AWS認定資格のロードマップ][scale=0.6]{
 //}
 
 //footnote[officialRoadmap][AWS認定より引用。 @<href>{https://aws.amazon.com/jp/certification/}]

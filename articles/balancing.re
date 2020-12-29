@@ -242,12 +242,12 @@ HTTPの「ソース」に書いてある「0.0.0.0/0」を消して、代わり�
 
 ブラウザで、EC2インスタンスに紐づいているElastic IPを直接叩いても（@<img>{startaws193}）、セキュリティグループに阻まれてWordPressのサイトは表示されません。
 
-//image[startaws195][Elastic IPを直接叩くとセキュリティグループに阻まれてサイトが表示されない][scale=0.8]{
+//image[startaws195][Elastic IPを直接叩くとセキュリティグループに阻まれてサイトが表示されない][scale=0.6]{
 //}
 
 でもELBを経由する「@<href>{http://www.自分のドメイン名/}」を開いたときは、ちゃんとサイトが表示（@<img>{startaws194}）されます。
 
-//image[startaws194][ELBを経由する「@<href>{http://www.自分のドメイン名/}」を開いたときはちゃんと表示される][scale=0.8]{
+//image[startaws194][ELBを経由する「@<href>{http://www.自分のドメイン名/}」を開いたときはちゃんと表示される][scale=0.6]{
 //}
 
 === 【ドリル】自宅以外からサイトが見られないようアクセス制限をしたい
@@ -485,7 +485,7 @@ EC2ダッシュボードの左メニューからインスタンスを開いた�
 
 停止から約1分後、「Auto Scaling: launch for group "start-aws-autoscaling-group"」という件名のメール（@<img>{startaws202}）が届きました。どうやらAuto ScalingによってAMIからインスタンスが生成されたようです。
 
-//image[startaws202][Auto Scalingによるインスタンスの追加を知らせるメールが届いた][scale=0.8]{
+//image[startaws202][Auto Scalingによるインスタンスの追加を知らせるメールが届いた][scale=0.6]{
 //}
 
 EC2ダッシュボードの左メニューでインスタンスを開くと、先ほど終了したインスタンスの状態は「終了済み」@<fn>{terminated}になり、その下に新たなインスタンスが表示（@<img>{startaws204}）されています。

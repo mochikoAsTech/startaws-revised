@@ -82,7 +82,7 @@ ssh ec2-user@login.自分のドメイン名 -i ~/Desktop/start-aws-keypair.pem
 $ sudo su -
 //}
 
-//image[startaws63][Amazon Linux 2 AMIと表示されたらrootになろう][scale=0.8]{
+//image[startaws63][Amazon Linux 2 AMIと表示されたらrootになろう][scale=0.6]{
 //}
 
 //footnote[sudoSu][sudoは「他のユーザとしてコマンドを実行する」ためのコマンドで、 suは「他のユーザになる」ためのコマンドです。「他のユーザ＝root」の場合はユーザ名を書かなくてもいいので省略していますが、省略せずに書くと「sudo -u root su - root」（rootとして「rootになる」というコマンドを実行する）ということです。ちなみに勘違いされることが多いですがsuは「Super User」ではなく「Substitute User（ユーザーを代用する）」の略です。]
@@ -273,7 +273,7 @@ AWSをはじめよう
 
 続いてブラウザでも「@<href>{http://www.自分のドメイン名}」を開いてサイトを確認してみましょう。（@<img>{startaws70}）するとなんと「アクセスしようとしているサイトを見つけられません。」と表示されてしまいました。
 
-//image[startaws70][ブラウザで「www.自分のドメイン名」を開いたらエラーになってしまった][scale=0.8]{
+//image[startaws70][ブラウザで「www.自分のドメイン名」を開いたらエラーになってしまった][scale=0.6]{
 //}
 
 これはまだ「www.自分のドメイン名」というドメイン名と、ウェブサーバのIPアドレスをつなぐAレコードが存在していないからです。Route53でAレコードを作りましょう。
