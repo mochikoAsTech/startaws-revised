@@ -333,64 +333,55 @@ AWS Auto Scaling（オートスケーリング）はサーバの自動拡張・�
 
 しかし本書では@<ttb>{Auto Scalingを拡張や縮小ではなく「インスタンス数の維持」のために利用}します。何か問題が起きてEC2のインスタンスが停止してしまっても、Auto Scalingによって新たにインスタンスが1台立てられて、ウェブサイトが自動復旧する状態を目指します。
 
-=== 起動設定を作成しよう
+=== 起動テンプレートを作ろう
 
-EC2ダッシュボードの左メニューで、「Auto Scaling」の下にある「起動設定（Launch Configurations）」@<fn>{english}を開きます。（@<img>{startaws163}）この「起動設定（Launch Configurations）」では、Auto Scalingが自動で立てるEC2インスタンスのAMIやインスタンスタイプを指定します。「起動設定の作成」をクリックしてください。
+EC2ダッシュボードの左メニューで「起動テンプレート」を開いて、「起動テンプレートを作成」をクリック（@<img>{launchTemplate1}）します。
 
-//image[startaws163][「起動設定」で「起動設定の作成」をクリック][scale=0.8]{
+//image[launchTemplate1][「起動テンプレート」で「起動テンプレートを作成」をクリック][scale=0.8]{
 //}
 
-//footnote[english][急に左メニューが英語になりましたが、マネジメントコンソールではよくあることです。気にせず進みましょう。]
+起動テンプレート名に「start-aws-autoscaling-launch-template」を入力（@<img>{launchTemplate2}）します。テンプレートバージョンの説明には「start-aws-instanceの起動テンプレート」と入力します。Auto Scalingのガイダンスにもチェックを入れておきましょう。
 
-起動設定名に「start-aws-autoscaling-launch-config」を入力します。Amazonマシンイメージ（AMI）は、@<chapref>{backup}で作成した「start-aws-ami」というAMIを選択（@<img>{startaws164}）します。
-
-//image[startaws164][AMIは「start-aws-ami」を選択][scale=0.8]{
+//image[launchTemplate2][起動テンプレート名とテンプレートバージョンの説明を入力][scale=0.8]{
 //}
 
-インスタンスタイプは、「インスタンスタイプの選択」をクリック（@<img>{startaws165}）して、現在のインスタンスと同じ「t2.micro」を選択します。
+Amazonマシンイメージ（AMI）AMIは「start-aws-ami」で検索（@<img>{launchTemplate3}）して、「自分のAMI」の下にある「start-aws-ami」を選択します。これは@<chapref>{backup}で作成したAMIです。インスタンスタイプは、現在のインスタンスと同じ「t2.micro」を選択します。Auto Scalingで自動起動してくるインスタンスにも、同じキーペアでSSHログインしたいので、キーペア（ログイン）は、「start-aws-keypair」を選択してください。
 
-//image[startaws165][「インスタンスタイプの選択」をクリックして「t2.micro」を選択][scale=0.8]{
+//image[launchTemplate3][AMI、インスタンスタイプ、キーペアを選択][scale=0.8]{
 //}
 
-追加設定の「IAMインスタンスプロファイル」は「s3-upload-role」を選択（@<img>{startaws165-2}）します。
+ネットワーク設定のセキュリティグループは、「ec2-security-group」を選択（@<img>{launchTemplate4}）します。ストレージ（ボリューム）とリソースタグ、ネットワークインターフェイスは、何も変更せずそのままで構いません。
 
-//image[startaws165-2][「IAMインスタンスプロファイル」は「s3-upload-role」を選択][scale=0.8]{
+//image[launchTemplate4][セキュリティグループは「ec2-security-group」を選択][scale=0.8]{
 //}
 
-ストレージ（ボリューム）は、何も変更せずそのままで構いません。セキュリティグループは、「既存のセキュリティグループを選択する」を選択（@<img>{startaws168}）して、現在のインスタンスと同じ「ec2-security-group」にチェックを入れます。
+「高度な詳細」を開いて、IAMインスタンスプロフィールで「s3-upload-role」を選択（@<img>{launchTemplate6}）します。
 
-//image[startaws168][「ec2-security-group」にチェックを入れる][scale=0.8]{
+//image[launchTemplate6][IAMインスタンスプロフィールで「s3-upload-role」を選択][scale=0.8]{
 //}
 
-「キーペア（ログイン）」では、「Auto Scalingが自動で立てるEC2インスタンスに、既存のキーペアの鍵穴を設置しますか？それとも新しくキーペアを作り直してその鍵穴を設置しますか？」と聞かれています。Auto Scalingで自動起動したインスタンスにも同じ鍵でSSHログインしたいので、キーペアのオプションは「既存のキーペアの選択」のまま（@<img>{startaws170}）で、「start-aws-keypair」を選択してください。チェックボックスにチェックを入れて「起動設定の作成」をクリックします。
+「正常にstart-aws-autoscaling-launch-template (lt-0f47b626b6cc0f742)を作成しました」と表示（@<img>{launchTemplate7}）されたら、起動テンプレートの作成は完了です。続いて、この起動テンプレートを使ってAuto Scalingグループを作成したいので「Auto Scalingグループを作成」をクリックしてください。
 
-//image[startaws170][チェックボックスにチェックを入れて「起動設定の作成」をクリック][scale=0.8]{
-//}
-
-「起動設定: start-aws-autoscaling-launch-config が正常に作成されました」と表示（@<img>{startaws166}）されたら、起動設定の作成は完了です。
-
-//image[startaws166][起動設定が作成できた][scale=0.8]{
+//image[launchTemplate7][「Auto Scalingグループを作成」をクリック][scale=0.8]{
 //}
 
 === Auto Scalingグループを作成しよう
 
-「起動設定」ができたら続いて「Auto Scalingグループ」を作成します。Auto ScalingグループはEC2インスタンスのグループのことで、このグループで常に維持したいインスタンスの数などを設定します。インスタンスの数はここで設定した最小数と最大数の間で増減します。「start-aws-autoscaling-launch-config」にチェック（@<img>{startaws167}）を入れて、「アクション」から「Auto Scalingグループの作成」をクリックしてください。
-
-//image[startaws167][「アクション」から「Auto Scalingグループの作成」をクリック][scale=0.8]{
-//}
+起動テンプレートができたら、続いて「Auto Scalingグループ」を作成します。Auto ScalingグループはEC2インスタンスのグループのことで、このグループで常に維持したいインスタンスの数などを設定します。インスタンスの数はここで設定した最小数と最大数の間で増減します。
 
 ここからは7つのステップでAuto Scalingグループを作成していきます。
 
 ==== ステップ1. 起動テンプレートまたは起動設定を選択する
 
-Auto Scalingグループ名に「start-aws-autoscaling-group」と入力（@<img>{startaws172}）します。起動設定が、さきほど作った「「start-aws-autoscaling-launch-config」になっていることを確認して、「次へ」をクリックします。
+Auto Scalingグループ名に「start-aws-autoscaling-group」と入力（@<img>{startaws172}）します。起動テンプレート
+が、さきほど作った「start-aws-autoscaling-launch-template」になっていることを確認してください。バージョンは「Latest (1)」にしておきます。「次へ」をクリックします。
 
-//image[startaws172][グループ名に「start-aws-autoscaling-group」と入力したら「次へ」をクリック][scale=0.8]{
+//image[startaws172][グループ名に「start-aws-autoscaling-group」と入力][scale=0.8]{
 //}
 
 ==== ステップ2. 設定の構成
 
-サブネットは既存のEC2インスタンスと同じ「ap-northeast-1a」を選択して、「次へ」をクリック（@<img>{startaws173}）します。
+インスタンスの購入オプションは、変更せずそのまま進みます。サブネットは既存のEC2インスタンスと同じ「ap-northeast-1a」を選択して、「次へ」をクリック（@<img>{startaws173}）します。
 
 //image[startaws173][「ap-northeast-1a」を選択して「次へ」をクリック][scale=0.8]{
 //}
@@ -442,56 +433,81 @@ Auto Scalingグループ名に「start-aws-autoscaling-group」と入力（@<img
 //image[startaws179][Auto Scalingグループの作成は完了][scale=0.8]{
 //}
 
-早速インスタンスを削除して自動復旧するかテストしてみましょう。
+Auto Scalingグループを作ると、その瞬間に「Auto Scalingグループ配下には常に1台のインスタンスが居るのが正しい！なのにいまは0台！よし、1台作るぞ！」とインスタンスが作られます。え、もともと「start-aws-instance」がいるでしょ？と思われると思いますが、あれはあなたが自力で立てたインスタンスであって、Auto Scalingによって管理されているインスタンスではないので、カウント外なのです。
 
-=== インスタンスを削除して自動復旧を試してみよう
+=== もともとのインスタンスは停止しておこう
 
-それではインスタンスを停止してもサイトが自動復旧するのか試してみましょう。まずブラウザで「@<href>{http://www.自分のドメイン名/}」を開いてサイトが表示（@<img>{startaws199}）されていることを確認します。
+EC2ダッシュボードでインスタンスを開く（@<img>{stopInstance1}）と、もともとあった「start-aws-instance」と、いまAuto Scalingによって作られたインスタンスが2つ並んでいます。
+
+//image[stopInstance1][インスタンスが2つ並んでいる][scale=0.8]{
+//}
+
+Auto Scalingで管理されている1台だけが起動していれば十分なので、もともとあった「start-aws-instance」は停止します。「start-aws-instance」にチェックを入れて、「インスタンスの状態＞インスタンスを停止」をクリック（@<img>{stopInstance2}）してください。なお今後、ミドルウェアなどを追加でインストールするときは、この「start-aws-instance」をAMIの元として使うため、停止はしますが、終了（削除）はしないでおきます。
+
+//image[stopInstance2][「start-aws-instance」にチェックを入れてインスタンスを停止][scale=0.8]{
+//}
+
+停止対象が「start-aws-instance」であることを確認したら、「停止」をクリック（@<img>{stopInstance3}）します。
+
+//image[stopInstance3][停止対象を確認して「停止」をクリック][scale=0.8]{
+//}
+
+EC2ダッシュボードのターゲットグループで、「elb-target-group」のTargetsタブを確認（@<img>{stopInstance4}）すると、停止した「start-aws-instance」はStatusがunusedになっています。しかしAuto Scalingで作られたもう1台のインスタンスがhealthyになっているので、サイトには影響がありません。
+
+//image[stopInstance4][「start-aws-instance」が停止しても、もう1台がhealthyなのでサイトには影響がない][scale=0.8]{
+//}
+
+ブラウザで「@<href>{http://www.自分のドメイン名/}」を開くと、サイトは問題なく表示（@<img>{startaws199}）されます。
 
 //image[startaws199][「@<href>{http://www.自分のドメイン名/}」を開くとサイトが表示される][scale=0.8]{
 //}
 
-続いてEC2ダッシュボードの左メニューで「インスタンス」をクリックしたら「start-aws-instance」を右クリックして、「インスタンスの状態」から「削除」（@<img>{startaws198}）をクリックしてみましょう。@<fn>{ami}
+=== インスタンスを削除して自動復旧を試してみよう
 
-//footnote[ami][もしAuto Scalingの設定に失敗していて自動復旧しなくても、手動でAMIからインスタンスを作り直せば復旧できるので大丈夫です。]
+それでは、Auto Scalingで作られたインスタンスを削除しても、サイトが自動復旧するかテストしてみましょう。
 
-//image[startaws198][「インスタンスの状態」から「削除」をクリック][scale=0.8]{
+EC2ダッシュボードの左メニューからインスタンスを開いたら、先ほどAuto Scalingによって作られたインスタンス（「start-aws-instance」じゃない方）にチェックをいれて、「インスタンスの状態＞インスタンスの終了」（@<img>{startaws198}）をクリックしてみましょう。@<fn>{ami}
+
+//footnote[ami][もしAuto Scalingの設定に失敗していて自動復旧しなくても、手動でAMIからインスタンスを作り直せば復旧できます。最悪、AMIの作成すら失敗していたとしても、停止中の「start-aws-instance」からAMIを作り直して、そこからインスタンスを作り直せば復旧できますので大丈夫です。]
+
+//image[startaws198][「インスタンスの状態＞インスタンスの停止」をクリック][scale=0.8]{
 //}
 
-恐ろしい警告が表示（@<img>{startaws200}）されますが「はい、削除する」をクリックします。
+なにやら恐ろしげな警告が表示（@<img>{startaws200}）されますが、要は「このインスタンスはAuto Scalingグループで管理されているから、終了すると代替のインスタンスが自動起動してくるよ」と教えてくれています。ありがたいですね。代替のインスタンスが自動起動してくるのは望むところなので、元気よく「終了」をクリックしましょう。
 
-//image[startaws200][「はい、削除する」をクリック][scale=0.8]{
+//image[startaws200][「終了」をクリック][scale=0.8]{
 //}
 
-インスタンスを削除すると状態がまず「shutting-down」に変わります。再びブラウザで「@<href>{http://www.自分のドメイン名/}」を見てみましょう。サイトがウェブサーバごといなくなってしまったので「503 Service Temporarily Unavailable」と表示（@<img>{startaws201}）されています。
+インスタンスを終了すると状態がまず「シャットダウン中」に変わります。再びブラウザで「@<href>{http://www.自分のドメイン名/}」を見てみましょう。サイトがウェブサーバごといなくなってしまったので、「503 Service Temporarily Unavailable」と表示（@<img>{startaws201}）されています。
 
 //image[startaws201][再び@<href>{http://www.自分のドメイン名/}」を開くと「503 Service Temporarily Unavailable」と表示される][scale=0.8]{
 //}
 
-停止から1分後、「Auto Scaling: launch for group "start-aws-autoscaling-group"」という件名のメール（@<img>{startaws202}）が届きました。どうやらAuto ScalingによってAMIからインスタンスが生成されたようです。
+停止から約1分後、「Auto Scaling: launch for group "start-aws-autoscaling-group"」という件名のメール（@<img>{startaws202}）が届きました。どうやらAuto ScalingによってAMIからインスタンスが生成されたようです。
 
 //image[startaws202][Auto Scalingによるインスタンスの追加を知らせるメールが届いた][scale=0.8]{
 //}
 
-左メニューで「インスタンス」をクリックすると、先ほど削除したインスタンスの状態は「terminated」@<fn>{terminated}になり、その下に新たなインスタンスが表示（@<img>{startaws204}）されています。
+EC2ダッシュボードの左メニューでインスタンスを開くと、先ほど終了したインスタンスの状態は「終了済み」@<fn>{terminated}になり、その下に新たなインスタンスが表示（@<img>{startaws204}）されています。
 
-//footnote[terminated][インスタンスの状態が「terminated」になってからしばらくすると一覧に表示されなくなります。]
+//footnote[terminated][インスタンスの状態が「終了済み」になってから、一定時間が経過すると一覧に表示されなくなります。]
 
-//image[startaws204][先ほど削除したインスタンスの下に新たなインスタンスが表示されている][scale=0.8]{
+//image[startaws204][先ほど終了したインスタンスの下に新たなインスタンスが表示されている][scale=0.8]{
 //}
 
-停止から3分後、もう一度ブラウザで「@<href>{http://www.自分のドメイン名/}」を開いてみると、見事にサイトは復旧していました。（@<img>{startaws203}）
+停止から約3分後、もう一度ブラウザで「@<href>{http://www.自分のドメイン名/}」を開いてみました。サイトは記事も画像もちゃんと復旧していました。（@<img>{startaws203}）
 
 //image[startaws203][もう一度@<href>{http://www.自分のドメイン名/}」を開くとサイトが復旧していた！][scale=0.8]{
 //}
 
-このようにインスタンスを削除したことで一時的にWordPressのサイトが見られなくなりましたが、すぐにAuto Scalingによってインスタンスが生成されサイトも自動復旧しました。このとき記事データはRDS（データベースサーバ）に、画像はS3にあるので何もかも元通りに表示されます。
+このようにAuto Scalingで管理されているインスタンスを終了させたことで、一時的にWordPressのサイトが見られなくなりましたが、すぐにAuto Scalingによってインスタンスが生成されサイトも自動復旧しました。このとき記事データはRDS（データベースサーバ）に、画像はS3にあるので何もかも元通りに表示されます。
 
-但しAuto Scalingでインスタンスが自動生成された場合、SSHログイン時に使っていたElastic IPだけは新しいインスタンスに自動で紐づきません。Elastic IPは元々紐づいていたインスタンスを失って宙ぶらりんな状態@<fn>{freeEip}になっています。左メニューの「Elastic IP」をクリック（@<img>{startaws205}）して、新しいEC2インスタンスに「アドレスの関連付け」をしてやれば再びSSHログインできるようになります。
+但しAuto Scalingでインスタンスが自動生成された場合、SSHのログイン時に使っていたElastic IPだけは新しいインスタンスに自動で紐づきません。@<fn>{templateMiss}いまElastic IPは、停止中のインスタンス（start-aws-instance）に紐づいている状態@<fn>{freeEip}です。左メニューの「Elastic IP」をクリック（@<img>{startaws205}）して、Auto Scalingによって新しく生まれたインスタンスに「アドレスの関連付け」をしてやれば、再びSSHログインできるようになります。
 
-//footnote[freeEip][新しいインスタンスに紐付けず宙ぶらりんなまま放っておくと、そのElastic IPは無料利用枠の対象外となってしまいますので注意してください。]
+//footnote[templateMiss][起動テンプレートの「ネットワークインターフェイス」の設定で、Elastic IPのENIを付けてやれば、Elastic IPをアタッチした状態で新しいインスタンスが生まれてくると思ったのですが、どうしてもうまくいかずに諦めました。同じエラーがフォーラムに報告されていたので、次に改訂するときは設定できることを祈っています。 @<href>{https://forums.aws.amazon.com/message.jspa?messageID=864259}]
+//footnote[freeEip][停止中のインスタンスに紐づいている、あるいはどのインスタンスに紐付けせずに宙ぶらりんな状態になっていると、そのElastic IPは無料利用枠の対象外となってしまい、お金がかかりますので注意してください。]
 
-//image[startaws205][新しいEC2インスタンスに宙ぶらりんなElastic IPの「アドレスの関連付け」をしてあげよう][scale=0.8]{
+//image[startaws205][新しいEC2インスタンスにElastic IPの「アドレスの関連付け」をしてあげよう][scale=0.8]{
 //}
 
-ウェブサーバを削除しても数分で何事もなかったかのように自動復旧するなんてすごくないですか？これでAuto ScalingでEC2インスタンスを自動復旧させる設定はおしまいです。
+ウェブサーバを終了させしても、ものの数分で何事もなかったかのように自動復旧するなんてすごくないですか？これでAuto ScalingでEC2インスタンスを自動復旧させる設定はおしまいです。
